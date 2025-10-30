@@ -1,0 +1,85 @@
+Judul: Analisis Topik Model dengan CTM dan BERTopic dalam Terjemah Al-Qur’an
+Presenter: Asep
+Durasi: Maksimal 10 Menit
+
+==============================
+1. PEMBUKAAN (1 Menit)
+==============================
+Assalamu’alaikum warahmatullahi wabarakatuh.
+Selamat pagi Bapak/Ibu dosen penguji dan rekan-rekan semua.
+
+Perkenalkan, saya Asep, dan hari ini saya akan mempresentasikan proposal penelitian saya yang berjudul:
+“Analisis Topik Model dengan CTM dan BERTopic dalam Terjemah Al-Qur’an”.
+
+Penelitian ini merupakan upaya memahami pola tematik dalam terjemahan Al-Qur’an secara komputasional, dengan pendekatan NLP.
+
+==============================
+2. LATAR BELAKANG (2 Menit)
+==============================
+Al-Qur’an memiliki struktur tematik yang kompleks dan multidimensi.
+Terjemahan Al-Qur’an dalam bahasa Indonesia digunakan luas untuk studi tafsir, pendidikan, dan dakwah.
+
+Namun, analisis tematik berbasis computational linguistics masih terbatas.
+Dengan kemajuan NLP, khususnya CTM dan BERTopic, kita dapat mengidentifikasi dan memvisualisasikan tema-tema utama secara otomatis.
+
+Ini membuka peluang untuk memahami distribusi tema, keterkaitan antar ayat, dan pengembangan aplikasi edukatif berbasis topik Al-Qur’an.
+
+==============================
+3. RUMUSAN MASALAH (1 Menit)
+==============================
+1. Bagaimana penerapan CTM dan BERTopic dalam menganalisis tema-tema utama dalam terjemahan Al-Qur’an?
+2. Apa perbedaan hasil dan keunggulan masing-masing metode dalam konteks teks religius?
+
+==============================
+4. TUJUAN & MANFAAT (1 Menit)
+==============================
+Tujuan: Menerapkan dan membandingkan CTM dan BERTopic untuk identifikasi tema dalam terjemahan Al-Qur’an.
+
+Manfaat:
+- Akademisi: pendekatan baru dalam studi Al-Qur’an berbasis NLP
+- Pengembang aplikasi: dasar fitur pencarian tematik atau tafsir digital
+- Masyarakat: pemahaman tematik yang lebih terstruktur dan mudah diakses
+
+==============================
+5. METODOLOGI PENELITIAN (2 Menit)
+==============================
+Pendekatan: Kuantitatif dengan teknik NLP
+
+Tahapan:
+1. Pengumpulan data: teks terjemahan Al-Qur’an versi Kemenag RI
+2. Preprocessing: tokenisasi, stopword removal, lemmatization
+3. Penerapan CTM dan BERTopic
+4. Evaluasi hasil: coherence score dan visualisasi topik
+5. Analisis perbandingan dan interpretasi tematik
+
+Tools: Python, HuggingFace Transformers, BERTopic library
+
+Validasi: Perbandingan hasil topik dengan struktur tematik dalam literatur tafsir
+
+==============================
+6. JADWAL & OUTPUT (1 Menit)
+==============================
+Durasi: 4 bulan
+- Bulan 1: Pengumpulan dan preprocessing data
+- Bulan 2: Implementasi CTM dan BERTopic
+- Bulan 3: Evaluasi dan visualisasi
+- Bulan 4: Penulisan laporan dan publikasi
+
+Output:
+- Dataset topik tematik Al-Qur’an
+- Visualisasi interaktif
+- Artikel ilmiah untuk jurnal NLP atau studi Islam digital
+
+==============================
+7. PENUTUP & KESIMPULAN (2 Menit)
+==============================
+Penelitian ini adalah bentuk integrasi antara ilmu komputer dan studi keislaman.
+
+Dengan CTM dan BERTopic, kita tidak hanya mengotomatisasi analisis tematik, tapi juga membuka jalan bagi pemahaman Al-Qur’an yang lebih sistematis dan inklusif.
+
+Saya berharap penelitian ini bisa menjadi kontribusi kecil dalam pengembangan studi Islam berbasis teknologi.
+
+Terima kasih atas perhatian Bapak/Ibu.
+Saya siap menerima masukan dan pertanyaan.
+
+Wassalamu’alaikum warahmatullahi wabarakatuh.

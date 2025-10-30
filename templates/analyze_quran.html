@@ -1,0 +1,275 @@
+{% extends "base.html" %}
+{% block content %}
+<div class="bg-emerald-50 min-h-screen py-10">
+  <div class="container mx-auto px-6">
+
+    <!-- Back Button -->
+    <div class="mb-6">
+      <a href="{{ url_for('index') }}" class="inline-flex items-center text-emerald-700 hover:underline">
+        <i class="fa-solid fa-arrow-left mr-2"></i> Kembali
+      </a>
+    </div>
+
+    <!-- Title -->
+    <div class="text-center mb-10">
+      <div class="flex justify-center items-center gap-2 text-emerald-600 text-4xl mb-3">
+        <i class="fa-solid fa-book-open-reader"></i>
+      </div>
+      <h1 class="text-3xl md:text-4xl font-extrabold text-emerald-800">Analisis Dokumen Keagamaan</h1>
+      <p class="text-slate-600 mt-3 max-w-2xl mx-auto">
+        Platform khusus untuk analisis topik teks Al-Qur'an, Hadis, dan dokumen keagamaan lainnya dengan pengenalan struktur surat, ayat, dan riwayat hadis
+      </p>
+    </div>
+
+    <!-- Tabs -->
+    <div class="flex justify-center mb-10">
+      <div class="bg-white shadow-sm rounded-lg flex overflow-hidden text-sm font-medium">
+        <button id="tab-upload" class="tab-btn px-6 py-3 flex items-center gap-2 text-emerald-700 border-b-2 border-emerald-600">
+          <i class="fa-solid fa-upload"></i> Upload Dokumen
+        </button>
+        <button id="tab-preprocess" class="tab-btn px-6 py-3 flex items-center gap-2 text-slate-500 hover:text-emerald-600">
+          <i class="fa-solid fa-gears"></i> Preprocessing
+        </button>
+        <button id="tab-analysis" class="tab-btn px-6 py-3 flex items-center gap-2 text-slate-500 hover:text-emerald-600">
+          <i class="fa-solid fa-chart-simple"></i> Hasil Analisis
+        </button>
+      </div>
+    </div>
+
+    <!-- Tab Content -->
+    <!-- <div id="content-upload" class="tab-content block">
+      <div class="bg-white rounded-xl p-8 shadow-sm border border-emerald-100">
+        <h2 class="text-lg font-semibold mb-6 flex items-center gap-2 text-emerald-800">
+          <i class="fa-solid fa-cloud-arrow-up text-emerald-600"></i> Upload Dokumen Keagamaan
+        </h2>
+        <form action="{{ url_for('upload') }}" method="post" enctype="multipart/form-data" class="border-2 border-dashed border-emerald-300 rounded-lg p-10 text-center">
+          <div class="text-5xl text-emerald-400 mb-4"><i class="fa-solid fa-upload"></i></div>
+          <p class="font-medium text-slate-700 mb-2">Upload file dokumen keagamaan</p>
+          <p class="text-sm text-slate-500 mb-4">Drag & drop file atau klik untuk memilih<br>Mendukung format: PDF, TXT, CSV (Max 10MB per file)</p>
+          <input type="file" name="file" class="hidden" id="fileInput" accept=".pdf,.txt,.csv" required>
+          <label for="fileInput" class="cursor-pointer bg-emerald-600 text-white px-5 py-2 rounded-lg hover:bg-emerald-700 inline-flex items-center gap-2">
+            <i class="fa-solid fa-folder-open"></i> Pilih File
+          </label>
+          <button type="submit" class="mt-3 block mx-auto bg-slate-900 text-white px-5 py-2 rounded-lg hover:opacity-95">
+            <i class="fa-solid fa-paper-plane"></i> Upload
+          </button>
+        </form>
+      </div>
+    </div> -->
+    <div id="content-upload" class="tab-content block">
+        <div class="bg-white rounded-xl p-8 shadow-sm border border-emerald-100">
+            <!-- Download Template -->
+            <div class="mb-6 bg-emerald-50 border border-emerald-200 rounded-lg p-6 relative">
+                <h3 id="toggleTemplateInfo" class="text-lg font-semibold text-emerald-800 flex items-center gap-2 mb-3">
+                    <i class="fa-solid fa-download"></i> Download Template
+                </h3>
+                <div id="templateInfo" class="hidden opacity-0 transition-opacity duration-500">
+                    <p class="font-medium text-purple-700 mb-3">Format CSV harus mengandung kolom berikut:</p>
+                    <ul class="list-disc list-inside text-sm text-slate-700 space-y-1 mb-5">
+                    <li><strong>book:</strong> Nama kitab suci (contoh: Bible, Quran, Bhagavad Gita)</li>
+                    <li><strong>chapter:</strong> Nama atau nomor chapter/surat</li>
+                    <li><strong>verse:</strong> Nomor ayat</li>
+                    <li><strong>text:</strong> Isi teks ayat</li>
+                    </ul>
+                </div>
+                <button id="downloadTemplate" class="absolute top-6 right-6 bg-purple-600 text-white px-5 py-2 rounded-md hover:bg-purple-700 flex items-center gap-2">
+                    <i class="fa-solid fa-cloud-arrow-down"></i> Download CSV Template
+                </button>
+            </div>
+
+            <!-- Judul -->
+            <h2 class="text-lg font-semibold mb-6 flex items-center gap-2 text-emerald-800">
+            <i class="fa-solid fa-cloud-arrow-up text-emerald-600"></i> Upload Dokumen
+            </h2>
+
+            <!-- Area Upload -->
+            <form id="uploadForm" enctype="multipart/form-data" class="border-2 border-dashed border-emerald-300 rounded-lg p-10 text-center relative">
+            <div class="text-5xl text-emerald-400 mb-4"><i class="fa-solid fa-upload"></i></div>
+            <p class="font-medium text-slate-700 mb-2">Upload file dokumen</p>
+            <p class="text-sm text-slate-500 mb-4">Drag & drop file atau klik untuk memilih<br>Mendukung PDF, TXT, CSV (Max 10MB per file)</p>
+            <input type="file" id="fileInput" name="file" class="hidden" accept=".pdf,.txt,.csv" required>
+            <label for="fileInput" class="cursor-pointer bg-emerald-600 text-white px-5 py-2 rounded-lg hover:bg-emerald-700 inline-flex items-center gap-2">
+                <i class="fa-solid fa-folder-open"></i> Pilih File
+            </label>
+            <button type="submit" class="mt-3 block mx-auto bg-slate-900 text-white px-5 py-2 rounded-lg hover:opacity-95">
+                <i class="fa-solid fa-paper-plane"></i> Upload
+            </button>
+            </form>
+
+            <!-- File yang diunggah -->
+            <div id="uploadedFileInfo" class="hidden mt-6 bg-emerald-50 border border-emerald-200 rounded-lg p-4 flex items-center gap-3 text-slate-700">
+                <i class="fa-solid fa-file-lines text-emerald-500 text-2xl"></i>
+                <div>
+                    <p id="fileName" class="font-medium"></p>
+                    <p id="fileSize" class="text-sm text-slate-500"></p>
+                </div>
+            </div>
+
+           
+
+            <!-- Button lanjut -->
+            <div id="nextStep" class="hidden mt-6 text-center">
+            <button id="btnNext" class="bg-emerald-600 text-white px-6 py-2 rounded-lg hover:bg-emerald-700 inline-flex items-center gap-2">
+                <i class="fa-solid fa-arrow-right"></i> Lanjut ke Preprocessing
+            </button>
+            </div>
+
+            <!-- Catatan -->
+            <div class="mt-8 bg-blue-50 border border-blue-200 rounded-lg p-5 text-sm text-slate-600">
+            <h3 class="font-semibold text-blue-700 flex items-center gap-2 mb-2">
+                <i class="fa-solid fa-circle-info"></i> Catatan
+            </h3>
+            <ul class="list-disc list-inside space-y-1">
+                <li>Dokumen akan diproses dengan pipeline preprocessing yang dapat dikustomisasi</li>
+                <li>Sistem akan mengekstraksi teks dari PDF secara otomatis</li>
+                <li>Format CSV harus memiliki kolom <code>text</code> atau <code>content</code></li>
+            </ul>
+            </div>
+
+            <!-- Message box -->
+            <div id="messageBox" class="fixed top-5 right-5 hidden bg-emerald-100 border border-emerald-300 text-emerald-800 px-5 py-3 rounded-lg shadow-lg flex items-center gap-2 animate-fade-in">
+            <i class="fa-solid fa-circle-check"></i> <span>File berhasil diunggah!</span>
+            </div>
+        </div>
+    </div>
+
+
+    <!-- Preprocessing Content -->
+    <div id="content-preprocess" class="tab-content hidden">
+      <div class="bg-white rounded-xl p-8 shadow-sm border border-emerald-100">
+        <h2 class="text-lg font-semibold mb-4 flex items-center gap-2 text-emerald-800">
+          <i class="fa-solid fa-gears text-emerald-600"></i> Tahap Preprocessing
+        </h2>
+        <p class="text-slate-600 mb-4 text-sm">Langkah-langkah yang akan dilakukan sebelum analisis:</p>
+        <ul class="list-disc list-inside text-slate-700 space-y-1">
+          <li>Normalisasi teks dan penghapusan tanda baca</li>
+          <li>Penghilangan stopwords bahasa Indonesia dan Arab</li>
+          <li>Tokenisasi kata dan lemmatization</li>
+          <li>Pemrosesan struktur ayat dan hadis (Surat, Ayat, Riwayat)</li>
+        </ul>
+
+        <div class="mt-6 text-center">
+          <button id="btnPreprocess" class="bg-emerald-600 text-white px-6 py-2 rounded-lg hover:bg-emerald-700 inline-flex items-center gap-2">
+            <i class="fa-solid fa-play"></i> Jalankan Preprocessing
+          </button>
+        </div>
+      </div>
+    </div>
+
+    <!-- Hasil Analisis Content -->
+    <div id="content-analysis" class="tab-content hidden">
+      <div class="bg-white rounded-xl p-8 shadow-sm border border-emerald-100">
+        <h2 class="text-lg font-semibold mb-6 flex items-center gap-2 text-emerald-800">
+          <i class="fa-solid fa-chart-simple text-emerald-600"></i> Hasil Analisis Topik
+        </h2>
+
+        <div class="text-center text-slate-600 mb-6">
+          <i class="fa-solid fa-spinner fa-spin text-3xl text-emerald-500 mb-3"></i>
+          <p>Menunggu hasil analisis...</p>
+        </div>
+
+        <!-- Placeholder grafik / tabel -->
+        <div class="border border-dashed border-emerald-200 rounded-lg p-10 text-center text-slate-400">
+          <p>Visualisasi topik akan ditampilkan di sini (contoh: bar chart, word cloud, dsb.)</p>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<script>
+    document.addEventListener("DOMContentLoaded", function() {
+    const tabs = document.querySelectorAll(".tab-btn");
+    const contents = document.querySelectorAll(".tab-content");
+
+    tabs.forEach(tab => {
+        tab.addEventListener("click", () => {
+        // reset styles
+        tabs.forEach(t => t.classList.remove("text-emerald-700", "border-b-2", "border-emerald-600"));
+        tabs.forEach(t => t.classList.add("text-slate-500"));
+        contents.forEach(c => c.classList.add("hidden"));
+        // activate selected
+        tab.classList.add("text-emerald-700", "border-b-2", "border-emerald-600");
+        tab.classList.remove("text-slate-500");
+        document.getElementById("content-" + tab.id.split("-")[1]).classList.remove("hidden");
+        });
+    });
+    });
+
+    document.addEventListener("DOMContentLoaded", function() {
+        const fileInput = document.getElementById("fileInput");
+        const uploadForm = document.getElementById("uploadForm");
+        const fileInfo = document.getElementById("uploadedFileInfo");
+        const fileName = document.getElementById("fileName");
+        const fileSize = document.getElementById("fileSize");
+        const nextStep = document.getElementById("nextStep");
+        const messageBox = document.getElementById("messageBox");
+        const btnNext = document.getElementById("btnNext");
+
+        // tampilkan info file saat dipilih
+        fileInput.addEventListener("change", function() {
+            const file = fileInput.files[0];
+            if (file) {
+            fileName.textContent = file.name;
+            fileSize.textContent = (file.size / 1024).toFixed(2) + " KB";
+            fileInfo.classList.remove("hidden");
+            }
+        });
+
+        // upload form simulasi AJAX
+        uploadForm.addEventListener("submit", function(e) {
+            e.preventDefault();
+            const file = fileInput.files[0];
+            if (!file) return;
+
+            // simulasi upload
+            messageBox.classList.remove("hidden");
+            setTimeout(() => {
+            messageBox.classList.add("hidden");
+            nextStep.classList.remove("hidden");
+            }, 2500);
+        });
+
+        // klik lanjut ke preprocessing
+        btnNext.addEventListener("click", function() {
+            document.getElementById("tab-preprocess").click();
+        });
+    });
+
+      // Toggle animasi fade-in/out
+    const toggle = document.getElementById("toggleTemplateInfo");
+    const info = document.getElementById("templateInfo");
+
+    toggle.addEventListener("click", () => {
+        if (info.classList.contains("hidden")) {
+        info.classList.remove("hidden");
+        setTimeout(() => (info.style.opacity = "1"), 10);
+        } else {
+        info.style.opacity = "0";
+        setTimeout(() => info.classList.add("hidden"), 500);
+        }
+    });
+
+    // Download file CSV dari root folder
+    document.getElementById("downloadTemplate").addEventListener("click", () => {
+        const link = document.createElement("a");
+        link.href = "template_file.csv"; // file di root folder
+        link.download = "template_file.csv";
+        document.body.appendChild(link);
+        link.click();
+        document.body.removeChild(link);
+    });
+</script>
+
+
+<style>
+@keyframes fadeIn {
+  from { opacity: 0; transform: translateY(-10px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+.animate-fade-in {
+  animation: fadeIn 0.4s ease-in-out;
+}
+</style>
+
+{% endblock %}
