@@ -1,38 +1,71 @@
-{% extends "base.html" %}
-{% block content %}
+{% extends "base.html" %} {% block content %}
 <div class="bg-emerald-50 min-h-screen py-10">
   <div class="container mx-auto px-6">
-
     <!-- Back Button -->
     <div class="mb-6">
-      <a href="{{ url_for('index') }}" class="inline-flex items-center text-emerald-700 hover:underline">
+      <a
+        href="{{ url_for('index') }}"
+        class="inline-flex items-center text-emerald-700 hover:underline"
+      >
         <i class="fa-solid fa-arrow-left mr-2"></i> Kembali
       </a>
     </div>
 
     <!-- Title -->
     <div class="text-center mb-10">
-      <div class="flex justify-center items-center gap-2 text-emerald-600 text-4xl mb-3">
+      <div
+        class="flex justify-center items-center gap-2 text-emerald-600 text-4xl mb-3"
+      >
         <i class="fa-solid fa-book-open-reader"></i>
       </div>
-      <h1 class="text-3xl md:text-4xl font-extrabold text-emerald-800">Analisis Dokumen Keagamaan</h1>
+      <h1 class="text-3xl md:text-4xl font-extrabold text-emerald-800">
+        Analisis Dokumen Keagamaan
+      </h1>
       <p class="text-slate-600 mt-3 max-w-2xl mx-auto">
-        Platform khusus untuk analisis topik teks Al-Qur'an, Hadis, dan dokumen keagamaan lainnya dengan pengenalan struktur surat, ayat, dan riwayat hadis
+        Platform khusus untuk analisis topik teks Al-Qur'an, Hadis, dan dokumen
+        keagamaan lainnya dengan pengenalan struktur surat, ayat, dan riwayat
+        hadis
       </p>
     </div>
 
     <!-- Tabs -->
     <div class="flex justify-center mb-10">
-      <div class="bg-white shadow-sm rounded-lg flex overflow-hidden text-sm font-medium">
-        <button id="tab-upload" class="tab-btn px-6 py-3 flex items-center gap-2 text-emerald-700 border-b-2 border-emerald-600">
+      <div
+        class="bg-white shadow-sm rounded-lg flex overflow-hidden text-sm font-medium"
+      >
+        <button
+          id="tab-upload"
+          class="tab-btn px-6 py-3 flex items-center gap-2 text-emerald-700 border-b-2 border-emerald-600"
+        >
           <i class="fa-solid fa-upload"></i> Upload Dokumen
         </button>
-        <button id="tab-preprocess" class="tab-btn px-6 py-3 flex items-center gap-2 text-slate-500 hover:text-emerald-600">
+        <button
+          id="tab-preprocess"
+          class="tab-btn px-6 py-3 flex items-center gap-2 text-slate-500 hover:text-emerald-600"
+        >
           <i class="fa-solid fa-gears"></i> Preprocessing
         </button>
-        <button id="tab-analysis" class="tab-btn px-6 py-3 flex items-center gap-2 text-slate-500 hover:text-emerald-600">
+        <button
+          id="tab-analysis"
+          class="tab-btn px-6 py-3 flex items-center gap-2 text-slate-500 hover:text-emerald-600"
+        >
           <i class="fa-solid fa-chart-simple"></i> Hasil Analisis
         </button>
+        <!-- tambaahan -->
+        <div id="content-result" class="tab-content hidden">
+          <div
+            class="bg-white rounded-xl p-8 shadow-sm border border-emerald-100"
+          >
+            <h2
+              class="text-lg font-semibold mb-4 flex items-center gap-2 text-emerald-800"
+            >
+              <i class="fa-solid fa-chart-line"></i> Hasil Analisis Topik
+            </h2>
+            <div id="analysisResult" class="text-slate-700 space-y-4">
+              <p>Belum ada hasil analisis.</p>
+            </div>
+          </div>
+        </div>
       </div>
     </div>
 
@@ -57,215 +90,455 @@
       </div>
     </div> -->
     <div id="content-upload" class="tab-content block">
-        <div class="bg-white rounded-xl p-8 shadow-sm border border-emerald-100">
-            <!-- Download Template -->
-            <div class="mb-6 bg-emerald-50 border border-emerald-200 rounded-lg p-6 relative">
-                <h3 id="toggleTemplateInfo" class="text-lg font-semibold text-emerald-800 flex items-center gap-2 mb-3">
-                    <i class="fa-solid fa-download"></i> Download Template
-                </h3>
-                <div id="templateInfo" class="hidden opacity-0 transition-opacity duration-500">
-                    <p class="font-medium text-purple-700 mb-3">Format CSV harus mengandung kolom berikut:</p>
-                    <ul class="list-disc list-inside text-sm text-slate-700 space-y-1 mb-5">
-                    <li><strong>book:</strong> Nama kitab suci (contoh: Bible, Quran, Bhagavad Gita)</li>
-                    <li><strong>chapter:</strong> Nama atau nomor chapter/surat</li>
-                    <li><strong>verse:</strong> Nomor ayat</li>
-                    <li><strong>text:</strong> Isi teks ayat</li>
-                    </ul>
-                </div>
-                <button id="downloadTemplate" class="absolute top-6 right-6 bg-purple-600 text-white px-5 py-2 rounded-md hover:bg-purple-700 flex items-center gap-2">
-                    <i class="fa-solid fa-cloud-arrow-down"></i> Download CSV Template
-                </button>
-            </div>
-
-            <!-- Judul -->
-            <h2 class="text-lg font-semibold mb-6 flex items-center gap-2 text-emerald-800">
-            <i class="fa-solid fa-cloud-arrow-up text-emerald-600"></i> Upload Dokumen
-            </h2>
-
-            <!-- Area Upload -->
-            <form id="uploadForm" enctype="multipart/form-data" class="border-2 border-dashed border-emerald-300 rounded-lg p-10 text-center relative">
-            <div class="text-5xl text-emerald-400 mb-4"><i class="fa-solid fa-upload"></i></div>
-            <p class="font-medium text-slate-700 mb-2">Upload file dokumen</p>
-            <p class="text-sm text-slate-500 mb-4">Drag & drop file atau klik untuk memilih<br>Mendukung PDF, TXT, CSV (Max 10MB per file)</p>
-            <input type="file" id="fileInput" name="file" class="hidden" accept=".pdf,.txt,.csv" required>
-            <label for="fileInput" class="cursor-pointer bg-emerald-600 text-white px-5 py-2 rounded-lg hover:bg-emerald-700 inline-flex items-center gap-2">
-                <i class="fa-solid fa-folder-open"></i> Pilih File
-            </label>
-            <button type="submit" class="mt-3 block mx-auto bg-slate-900 text-white px-5 py-2 rounded-lg hover:opacity-95">
-                <i class="fa-solid fa-paper-plane"></i> Upload
-            </button>
-            </form>
-
-            <!-- File yang diunggah -->
-            <div id="uploadedFileInfo" class="hidden mt-6 bg-emerald-50 border border-emerald-200 rounded-lg p-4 flex items-center gap-3 text-slate-700">
-                <i class="fa-solid fa-file-lines text-emerald-500 text-2xl"></i>
-                <div>
-                    <p id="fileName" class="font-medium"></p>
-                    <p id="fileSize" class="text-sm text-slate-500"></p>
-                </div>
-            </div>
-
-           
-
-            <!-- Button lanjut -->
-            <div id="nextStep" class="hidden mt-6 text-center">
-            <button id="btnNext" class="bg-emerald-600 text-white px-6 py-2 rounded-lg hover:bg-emerald-700 inline-flex items-center gap-2">
-                <i class="fa-solid fa-arrow-right"></i> Lanjut ke Preprocessing
-            </button>
-            </div>
-
-            <!-- Catatan -->
-            <div class="mt-8 bg-blue-50 border border-blue-200 rounded-lg p-5 text-sm text-slate-600">
-            <h3 class="font-semibold text-blue-700 flex items-center gap-2 mb-2">
-                <i class="fa-solid fa-circle-info"></i> Catatan
-            </h3>
-            <ul class="list-disc list-inside space-y-1">
-                <li>Dokumen akan diproses dengan pipeline preprocessing yang dapat dikustomisasi</li>
-                <li>Sistem akan mengekstraksi teks dari PDF secara otomatis</li>
-                <li>Format CSV harus memiliki kolom <code>text</code> atau <code>content</code></li>
+      <div class="bg-white rounded-xl p-8 shadow-sm border border-emerald-100">
+        <!-- Download Template -->
+        <div
+          class="mb-6 bg-emerald-50 border border-emerald-200 rounded-lg p-6 relative"
+        >
+          <h3
+            id="toggleTemplateInfo"
+            class="text-lg font-semibold text-emerald-800 flex items-center gap-2 mb-3"
+          >
+            <i class="fa-solid fa-download"></i> Download Template
+          </h3>
+          <div
+            id="templateInfo"
+            class="hidden opacity-0 transition-opacity duration-500"
+          >
+            <p class="font-medium text-purple-700 mb-3">
+              Format CSV harus mengandung kolom berikut:
+            </p>
+            <ul
+              class="list-disc list-inside text-sm text-slate-700 space-y-1 mb-5"
+            >
+              <li>
+                <strong>book:</strong> Nama kitab suci (contoh: Bible, Quran,
+                Bhagavad Gita)
+              </li>
+              <li><strong>chapter:</strong> Nama atau nomor chapter/surat</li>
+              <li><strong>verse:</strong> Nomor ayat</li>
+              <li><strong>text:</strong> Isi teks ayat</li>
             </ul>
-            </div>
-
-            <!-- Message box -->
-            <div id="messageBox" class="fixed top-5 right-5 hidden bg-emerald-100 border border-emerald-300 text-emerald-800 px-5 py-3 rounded-lg shadow-lg flex items-center gap-2 animate-fade-in">
-            <i class="fa-solid fa-circle-check"></i> <span>File berhasil diunggah!</span>
-            </div>
+          </div>
+          <button
+            id="downloadTemplate"
+            class="absolute top-6 right-6 bg-purple-600 text-white px-5 py-2 rounded-md hover:bg-purple-700 flex items-center gap-2"
+          >
+            <i class="fa-solid fa-cloud-arrow-down"></i> Download CSV Template
+          </button>
         </div>
-    </div>
 
+        <!-- Judul -->
+        <h2
+          class="text-lg font-semibold mb-6 flex items-center gap-2 text-emerald-800"
+        >
+          <i class="fa-solid fa-cloud-arrow-up text-emerald-600"></i> Upload
+          Dokumen
+        </h2>
+
+        <!-- Area Upload -->
+        <form
+          id="uploadForm"
+          enctype="multipart/form-data"
+          class="border-2 border-dashed border-emerald-300 rounded-lg p-10 text-center relative"
+        >
+          <div class="text-5xl text-emerald-400 mb-4">
+            <i class="fa-solid fa-upload"></i>
+          </div>
+          <p class="font-medium text-slate-700 mb-2">Upload file dokumen</p>
+          <p class="text-sm text-slate-500 mb-4">
+            Drag & drop file atau klik untuk memilih<br />Mendukung PDF, TXT,
+            CSV (Max 10MB per file)
+          </p>
+          <input
+            type="file"
+            id="fileInput"
+            name="file"
+            class="hidden"
+            accept=".pdf,.txt,.csv"
+            required
+          />
+          <label
+            for="fileInput"
+            class="cursor-pointer bg-emerald-600 text-white px-5 py-2 rounded-lg hover:bg-emerald-700 inline-flex items-center gap-2"
+          >
+            <i class="fa-solid fa-folder-open"></i> Pilih File
+          </label>
+          <button
+            type="submit"
+            class="mt-3 block mx-auto bg-slate-900 text-white px-5 py-2 rounded-lg hover:opacity-95"
+          >
+            <i class="fa-solid fa-paper-plane"></i> Upload
+          </button>
+        </form>
+
+        <!-- File yang diunggah -->
+        <div
+          id="uploadedFileInfo"
+          class="hidden mt-6 bg-emerald-50 border border-emerald-200 rounded-lg p-4 flex items-center gap-3 text-slate-700"
+        >
+          <i class="fa-solid fa-file-lines text-emerald-500 text-2xl"></i>
+          <div>
+            <p id="fileName" class="font-medium"></p>
+            <p id="fileSize" class="text-sm text-slate-500"></p>
+          </div>
+        </div>
+
+        <!-- Button lanjut -->
+        <div id="nextStep" class="hidden mt-6 text-center">
+          <button
+            id="btnNext"
+            class="bg-emerald-600 text-white px-6 py-2 rounded-lg hover:bg-emerald-700 inline-flex items-center gap-2"
+          >
+            <i class="fa-solid fa-arrow-right"></i> Lanjut ke Preprocessing
+          </button>
+        </div>
+
+        <!-- Catatan -->
+        <div
+          class="mt-8 bg-blue-50 border border-blue-200 rounded-lg p-5 text-sm text-slate-600"
+        >
+          <h3 class="font-semibold text-blue-700 flex items-center gap-2 mb-2">
+            <i class="fa-solid fa-circle-info"></i> Catatan
+          </h3>
+          <ul class="list-disc list-inside space-y-1">
+            <li>
+              Dokumen akan diproses dengan pipeline preprocessing yang dapat
+              dikustomisasi
+            </li>
+            <li>Sistem akan mengekstraksi teks dari PDF secara otomatis</li>
+            <li>
+              Format CSV harus memiliki kolom <code>text</code> atau
+              <code>content</code>
+            </li>
+          </ul>
+        </div>
+
+        <!-- Message box -->
+        <div
+          id="messageBox"
+          class="fixed top-5 right-5 hidden bg-emerald-100 border border-emerald-300 text-emerald-800 px-5 py-3 rounded-lg shadow-lg flex items-center gap-2 animate-fade-in"
+        >
+          <i class="fa-solid fa-circle-check"></i>
+          <span>File berhasil diunggah!</span>
+        </div>
+      </div>
+    </div>
 
     <!-- Preprocessing Content -->
     <div id="content-preprocess" class="tab-content hidden">
       <div class="bg-white rounded-xl p-8 shadow-sm border border-emerald-100">
-        <h2 class="text-lg font-semibold mb-4 flex items-center gap-2 text-emerald-800">
-          <i class="fa-solid fa-gears text-emerald-600"></i> Konfigurasi Preprocessing
+        <h2
+          class="text-lg font-semibold mb-4 flex items-center gap-2 text-emerald-800"
+        >
+          <i class="fa-solid fa-gears text-emerald-600"></i> Konfigurasi
+          Preprocessing
         </h2>
 
         <div id="preprocessOptions" class="space-y-3">
-          <div class="option bg-slate-50 p-4 rounded-lg border flex justify-between items-center cursor-pointer">
+          <div
+            class="option bg-slate-50 p-4 rounded-lg border flex justify-between items-center cursor-pointer"
+          >
             <div>
               <p class="font-semibold text-slate-800">Case Folding</p>
-              <p class="text-sm text-slate-500 hidden">Konversi semua teks ke huruf kecil</p>
+              <p class="text-sm text-slate-500 hidden">
+                Konversi semua teks ke huruf kecil
+              </p>
             </div>
             <label class="inline-flex items-center cursor-pointer">
-              <input type="checkbox" id="case_folding" checked class="sr-only peer">
-              <div class="w-10 h-6 bg-gray-300 peer-checked:bg-emerald-600 rounded-full relative transition">
-                <div class="absolute left-1 top-1 w-4 h-4 bg-white rounded-full transition peer-checked:translate-x-4"></div>
+              <input
+                type="checkbox"
+                id="case_folding"
+                checked
+                class="sr-only peer"
+              />
+              <div
+                class="w-10 h-6 bg-gray-300 peer-checked:bg-emerald-600 rounded-full relative transition"
+              >
+                <div
+                  class="absolute left-1 top-1 w-4 h-4 bg-white rounded-full transition peer-checked:translate-x-4"
+                ></div>
               </div>
             </label>
           </div>
 
-          <div class="option bg-slate-50 p-4 rounded-lg border flex justify-between items-center cursor-pointer">
+          <div
+            class="option bg-slate-50 p-4 rounded-lg border flex justify-between items-center cursor-pointer"
+          >
             <div>
               <p class="font-semibold text-slate-800">Remove Punctuation</p>
               <p class="text-sm text-slate-500 hidden">Menghapus tanda baca</p>
             </div>
             <label class="inline-flex items-center cursor-pointer">
-              <input type="checkbox" id="remove_punct" checked class="sr-only peer">
-              <div class="w-10 h-6 bg-gray-300 peer-checked:bg-emerald-600 rounded-full relative transition">
-                <div class="absolute left-1 top-1 w-4 h-4 bg-white rounded-full transition peer-checked:translate-x-4"></div>
+              <input
+                type="checkbox"
+                id="remove_punct"
+                checked
+                class="sr-only peer"
+              />
+              <div
+                class="w-10 h-6 bg-gray-300 peer-checked:bg-emerald-600 rounded-full relative transition"
+              >
+                <div
+                  class="absolute left-1 top-1 w-4 h-4 bg-white rounded-full transition peer-checked:translate-x-4"
+                ></div>
               </div>
             </label>
           </div>
 
-          <div class="option bg-slate-50 p-4 rounded-lg border flex justify-between items-center cursor-pointer">
+          <div
+            class="option bg-slate-50 p-4 rounded-lg border flex justify-between items-center cursor-pointer"
+          >
             <div>
               <p class="font-semibold text-slate-800">Remove Numbers</p>
-              <p class="text-sm text-slate-500 hidden">Menghapus angka dari teks</p>
+              <p class="text-sm text-slate-500 hidden">
+                Menghapus angka dari teks
+              </p>
             </div>
             <label class="inline-flex items-center cursor-pointer">
-              <input type="checkbox" id="remove_numbers" checked class="sr-only peer">
-              <div class="w-10 h-6 bg-gray-300 peer-checked:bg-emerald-600 rounded-full relative transition">
-                <div class="absolute left-1 top-1 w-4 h-4 bg-white rounded-full transition peer-checked:translate-x-4"></div>
+              <input
+                type="checkbox"
+                id="remove_numbers"
+                checked
+                class="sr-only peer"
+              />
+              <div
+                class="w-10 h-6 bg-gray-300 peer-checked:bg-emerald-600 rounded-full relative transition"
+              >
+                <div
+                  class="absolute left-1 top-1 w-4 h-4 bg-white rounded-full transition peer-checked:translate-x-4"
+                ></div>
               </div>
             </label>
           </div>
 
-          <div class="option bg-slate-50 p-4 rounded-lg border flex justify-between items-center cursor-pointer">
+          <div
+            class="option bg-slate-50 p-4 rounded-lg border flex justify-between items-center cursor-pointer"
+          >
             <div>
               <p class="font-semibold text-slate-800">Stopword Removal</p>
               <p class="text-sm text-slate-500 hidden">Menghapus kata umum</p>
             </div>
             <label class="inline-flex items-center cursor-pointer">
-              <input type="checkbox" id="stopword" checked class="sr-only peer">
-              <div class="w-10 h-6 bg-gray-300 peer-checked:bg-emerald-600 rounded-full relative transition">
-                <div class="absolute left-1 top-1 w-4 h-4 bg-white rounded-full transition peer-checked:translate-x-4"></div>
+              <input
+                type="checkbox"
+                id="stopword"
+                checked
+                class="sr-only peer"
+              />
+              <div
+                class="w-10 h-6 bg-gray-300 peer-checked:bg-emerald-600 rounded-full relative transition"
+              >
+                <div
+                  class="absolute left-1 top-1 w-4 h-4 bg-white rounded-full transition peer-checked:translate-x-4"
+                ></div>
               </div>
             </label>
           </div>
 
-          <div class="option bg-slate-50 p-4 rounded-lg border flex justify-between items-center cursor-pointer">
+          <div
+            class="option bg-slate-50 p-4 rounded-lg border flex justify-between items-center cursor-pointer"
+          >
             <div>
               <p class="font-semibold text-slate-800">Tokenization</p>
-              <p class="text-sm text-slate-500 hidden">Memecah teks menjadi token</p>
+              <p class="text-sm text-slate-500 hidden">
+                Memecah teks menjadi token
+              </p>
             </div>
             <label class="inline-flex items-center cursor-pointer">
-              <input type="checkbox" id="tokenization" checked class="sr-only peer">
-              <div class="w-10 h-6 bg-gray-300 peer-checked:bg-emerald-600 rounded-full relative transition">
-                <div class="absolute left-1 top-1 w-4 h-4 bg-white rounded-full transition peer-checked:translate-x-4"></div>
+              <input
+                type="checkbox"
+                id="tokenization"
+                checked
+                class="sr-only peer"
+              />
+              <div
+                class="w-10 h-6 bg-gray-300 peer-checked:bg-emerald-600 rounded-full relative transition"
+              >
+                <div
+                  class="absolute left-1 top-1 w-4 h-4 bg-white rounded-full transition peer-checked:translate-x-4"
+                ></div>
               </div>
             </label>
           </div>
 
-          <div class="option bg-slate-50 p-4 rounded-lg border flex justify-between items-center cursor-pointer">
+          <div
+            class="option bg-slate-50 p-4 rounded-lg border flex justify-between items-center cursor-pointer"
+          >
             <div>
               <p class="font-semibold text-slate-800">Stemming</p>
-              <p class="text-sm text-slate-500 hidden">Mengubah kata ke bentuk dasar</p>
+              <p class="text-sm text-slate-500 hidden">
+                Mengubah kata ke bentuk dasar
+              </p>
             </div>
             <label class="inline-flex items-center cursor-pointer">
-              <input type="checkbox" id="stemming" checked class="sr-only peer">
-              <div class="w-10 h-6 bg-gray-300 peer-checked:bg-emerald-600 rounded-full relative transition">
-                <div class="absolute left-1 top-1 w-4 h-4 bg-white rounded-full transition peer-checked:translate-x-4"></div>
+              <input
+                type="checkbox"
+                id="stemming"
+                checked
+                class="sr-only peer"
+              />
+              <div
+                class="w-10 h-6 bg-gray-300 peer-checked:bg-emerald-600 rounded-full relative transition"
+              >
+                <div
+                  class="absolute left-1 top-1 w-4 h-4 bg-white rounded-full transition peer-checked:translate-x-4"
+                ></div>
               </div>
             </label>
           </div>
 
-          <div class="option bg-slate-50 p-4 rounded-lg border flex justify-between items-center cursor-pointer">
+          <div
+            class="option bg-slate-50 p-4 rounded-lg border flex justify-between items-center cursor-pointer"
+          >
             <div>
               <p class="font-semibold text-slate-800">Lemmatization</p>
-              <p class="text-sm text-slate-500 hidden">Normalisasi kata ke bentuk leksikon</p>
+              <p class="text-sm text-slate-500 hidden">
+                Normalisasi kata ke bentuk leksikon
+              </p>
             </div>
             <label class="inline-flex items-center cursor-pointer">
-              <input type="checkbox" id="lemmatization" checked class="sr-only peer">
-              <div class="w-10 h-6 bg-gray-300 peer-checked:bg-emerald-600 rounded-full relative transition">
-                <div class="absolute left-1 top-1 w-4 h-4 bg-white rounded-full transition peer-checked:translate-x-4"></div>
+              <input
+                type="checkbox"
+                id="lemmatization"
+                checked
+                class="sr-only peer"
+              />
+              <div
+                class="w-10 h-6 bg-gray-300 peer-checked:bg-emerald-600 rounded-full relative transition"
+              >
+                <div
+                  class="absolute left-1 top-1 w-4 h-4 bg-white rounded-full transition peer-checked:translate-x-4"
+                ></div>
               </div>
             </label>
           </div>
         </div>
 
         <div class="mt-8 flex justify-between items-center">
-          <button id="btnBack" class="bg-slate-200 px-5 py-2 rounded-lg hover:bg-slate-300 flex items-center gap-2">
+          <button
+            id="btnBack"
+            class="bg-slate-200 px-5 py-2 rounded-lg hover:bg-slate-300 flex items-center gap-2"
+          >
             <i class="fa-solid fa-arrow-left"></i> Kembali
           </button>
           <div class="flex items-center gap-3">
-            <button id="btnPreprocess" class="bg-emerald-600 text-white px-6 py-2 rounded-lg hover:bg-emerald-700 inline-flex items-center gap-2">
+            <button
+              id="btnPreprocess"
+              class="bg-emerald-600 text-white px-6 py-2 rounded-lg hover:bg-emerald-700 inline-flex items-center gap-2"
+            >
               <i class="fa-solid fa-play"></i> Mulai Preprocessing
             </button>
-            <a id="btnDownload" href="#" class="hidden bg-blue-600 text-white px-5 py-2 rounded-lg hover:bg-blue-700 inline-flex items-center gap-2">
+            <a
+              id="btnDownload"
+              href="#"
+              class="hidden bg-blue-600 text-white px-5 py-2 rounded-lg hover:bg-blue-700 inline-flex items-center gap-2"
+            >
               <i class="fa-solid fa-download"></i> Download Hasil
             </a>
           </div>
         </div>
       </div>
-    </div>
 
+      <hr class="my-8 border-emerald-200" />
+
+      <!-- Pilihan Model Analisis -->
+      <div class="bg-emerald-50 p-6 rounded-lg border border-emerald-200 mt-6">
+        <h3 class="text-emerald-800 font-semibold mb-4 flex items-center gap-2">
+          <i class="fa-solid fa-brain"></i> Model Analisis Topik
+        </h3>
+
+        <div id="modelButtons" class="flex flex-wrap gap-4">
+          <label
+            class="flex items-center gap-2 cursor-pointer bg-white px-4 py-2 rounded-lg border border-emerald-300 hover:bg-emerald-100 transition"
+          >
+            <input
+              type="radio"
+              name="model"
+              value="lda"
+              class="text-emerald-600 focus:ring-emerald-500"
+              checked
+            />
+            <span class="font-medium text-slate-700"
+              >LDA (Latent Dirichlet Allocation)</span
+            >
+          </label>
+
+          <label
+            class="flex items-center gap-2 cursor-pointer bg-white px-4 py-2 rounded-lg border border-emerald-300 hover:bg-emerald-100 transition"
+          >
+            <input
+              type="radio"
+              name="model"
+              value="ctm"
+              class="text-emerald-600 focus:ring-emerald-500"
+            />
+            <span class="font-medium text-slate-700"
+              >CTM (Correlated Topic Model)</span
+            >
+          </label>
+
+          <label
+            class="flex items-center gap-2 cursor-pointer bg-white px-4 py-2 rounded-lg border border-emerald-300 hover:bg-emerald-100 transition"
+          >
+            <input
+              type="radio"
+              name="model"
+              value="bertopic"
+              class="text-emerald-600 focus:ring-emerald-500"
+            />
+            <span class="font-medium text-slate-700">BERTopic</span>
+          </label>
+        </div>
+
+        <div class="mt-6 flex justify-end gap-3">
+          <button
+            id="btnAnalyze"
+            class="bg-indigo-600 text-white px-6 py-2 rounded-lg hover:bg-indigo-700 inline-flex items-center gap-2"
+          >
+            <i class="fa-solid fa-magnifying-glass-chart"></i> Mulai Analisis
+            Topik
+          </button>
+        </div>
+
+        <div
+          id="preprocessInfo"
+          class="hidden mt-4 text-amber-700 bg-amber-100 border border-amber-200 rounded-lg px-4 py-3 text-sm flex items-center gap-2"
+        >
+          <i class="fa-solid fa-circle-info"></i>
+          <span
+            >Anda belum melakukan preprocessing. Disarankan melakukan
+            preprocessing sebelum analisis agar hasil lebih optimal.</span
+          >
+        </div>
+      </div>
+    </div>
 
     <!-- Hasil Analisis Content -->
     <div id="content-analysis" class="tab-content hidden">
       <div class="bg-white rounded-xl p-8 shadow-sm border border-emerald-100">
-        <h2 class="text-lg font-semibold mb-6 flex items-center gap-2 text-emerald-800">
-          <i class="fa-solid fa-chart-simple text-emerald-600"></i> Hasil Analisis Topik
+        <h2
+          class="text-lg font-semibold mb-6 flex items-center gap-2 text-emerald-800"
+        >
+          <i class="fa-solid fa-chart-simple text-emerald-600"></i> Hasil
+          Analisis Topik
         </h2>
 
         <div class="text-center text-slate-600 mb-6">
-          <i class="fa-solid fa-spinner fa-spin text-3xl text-emerald-500 mb-3"></i>
+          <i
+            class="fa-solid fa-spinner fa-spin text-3xl text-emerald-500 mb-3"
+          ></i>
           <p>Menunggu hasil analisis...</p>
         </div>
 
         <!-- Placeholder grafik / tabel -->
-        <div class="border border-dashed border-emerald-200 rounded-lg p-10 text-center text-slate-400">
-          <p>Visualisasi topik akan ditampilkan di sini (contoh: bar chart, word cloud, dsb.)</p>
+        <div
+          class="border border-dashed border-emerald-200 rounded-lg p-10 text-center text-slate-400"
+        >
+          <p>
+            Visualisasi topik akan ditampilkan di sini (contoh: bar chart, word
+            cloud, dsb.)
+          </p>
         </div>
       </div>
     </div>
@@ -273,154 +546,300 @@
 </div>
 
 <script>
-    document.addEventListener("DOMContentLoaded", function() {
+  document.addEventListener("DOMContentLoaded", function () {
     const tabs = document.querySelectorAll(".tab-btn");
     const contents = document.querySelectorAll(".tab-content");
 
-    tabs.forEach(tab => {
-        tab.addEventListener("click", () => {
+    tabs.forEach((tab) => {
+      tab.addEventListener("click", () => {
         // reset styles
-        tabs.forEach(t => t.classList.remove("text-emerald-700", "border-b-2", "border-emerald-600"));
-        tabs.forEach(t => t.classList.add("text-slate-500"));
-        contents.forEach(c => c.classList.add("hidden"));
+        tabs.forEach((t) =>
+          t.classList.remove(
+            "text-emerald-700",
+            "border-b-2",
+            "border-emerald-600"
+          )
+        );
+        tabs.forEach((t) => t.classList.add("text-slate-500"));
+        contents.forEach((c) => c.classList.add("hidden"));
         // activate selected
-        tab.classList.add("text-emerald-700", "border-b-2", "border-emerald-600");
+        tab.classList.add(
+          "text-emerald-700",
+          "border-b-2",
+          "border-emerald-600"
+        );
         tab.classList.remove("text-slate-500");
-        document.getElementById("content-" + tab.id.split("-")[1]).classList.remove("hidden");
-        });
+        document
+          .getElementById("content-" + tab.id.split("-")[1])
+          .classList.remove("hidden");
+      });
     });
-    });
+  });
 
-    document.addEventListener("DOMContentLoaded", function() {
-        const fileInput = document.getElementById("fileInput");
-        const uploadForm = document.getElementById("uploadForm");
-        const fileInfo = document.getElementById("uploadedFileInfo");
-        const fileName = document.getElementById("fileName");
-        const fileSize = document.getElementById("fileSize");
-        const nextStep = document.getElementById("nextStep");
-        const messageBox = document.getElementById("messageBox");
-        const btnNext = document.getElementById("btnNext");
+  document.addEventListener("DOMContentLoaded", function () {
+    const fileInput = document.getElementById("fileInput");
+    const uploadForm = document.getElementById("uploadForm");
+    const fileInfo = document.getElementById("uploadedFileInfo");
+    const fileName = document.getElementById("fileName");
+    const fileSize = document.getElementById("fileSize");
+    const nextStep = document.getElementById("nextStep");
+    const messageBox = document.getElementById("messageBox");
+    const btnNext = document.getElementById("btnNext");
 
-        // tampilkan info file saat dipilih
-        fileInput.addEventListener("change", function() {
-            const file = fileInput.files[0];
-            if (file) {
-            fileName.textContent = file.name;
-            fileSize.textContent = (file.size / 1024).toFixed(2) + " KB";
-            fileInfo.classList.remove("hidden");
-            }
-        });
-
-        // upload form simulasi AJAX
-        uploadForm.addEventListener("submit", function(e) {
-            e.preventDefault();
-            const file = fileInput.files[0];
-            if (!file) return;
-
-            // simulasi upload
-            messageBox.classList.remove("hidden");
-            setTimeout(() => {
-            messageBox.classList.add("hidden");
-            nextStep.classList.remove("hidden");
-            }, 2500);
-        });
-
-        // klik lanjut ke preprocessing
-        btnNext.addEventListener("click", function() {
-            document.getElementById("tab-preprocess").click();
-        });
+    // tampilkan info file saat dipilih
+    fileInput.addEventListener("change", function () {
+      const file = fileInput.files[0];
+      if (file) {
+        fileName.textContent = file.name;
+        fileSize.textContent = (file.size / 1024).toFixed(2) + " KB";
+        fileInfo.classList.remove("hidden");
+      }
     });
 
-      // Toggle animasi fade-in/out
-    const toggle = document.getElementById("toggleTemplateInfo");
-    const info = document.getElementById("templateInfo");
+    // upload form simulasi AJAX
+    uploadForm.addEventListener("submit", async function (e) {
+      e.preventDefault();
 
-    toggle.addEventListener("click", () => {
-        if (info.classList.contains("hidden")) {
-        info.classList.remove("hidden");
-        setTimeout(() => (info.style.opacity = "1"), 10);
-        } else {
-        info.style.opacity = "0";
-        setTimeout(() => info.classList.add("hidden"), 500);
-        }
+      const file = fileInput.files[0];
+      if (!file) {
+        alert("Silakan pilih file terlebih dahulu.");
+        return;
+      }
+
+      const formData = new FormData();
+      formData.append("file", file);
+
+      const res = await fetch("/upload", { method: "POST", body: formData });
+      const text = await res.text();
+
+      if (res.ok) {
+        messageBox.classList.remove("hidden");
+        setTimeout(() => messageBox.classList.add("hidden"), 2000);
+
+        // tampilkan info file di UI
+        fileName.textContent = file.name;
+        fileSize.textContent = (file.size / 1024).toFixed(2) + " KB";
+        fileInfo.classList.remove("hidden");
+
+        // tampilkan tombol lanjut
+        nextStep.classList.remove("hidden");
+      } else {
+        alert("Gagal mengunggah file: " + text);
+      }
+      // simulasi upload
+      messageBox.classList.remove("hidden");
+      setTimeout(() => {
+        messageBox.classList.add("hidden");
+        nextStep.classList.remove("hidden");
+      }, 2500);
     });
 
-    // Download file CSV dari root folder
-    document.getElementById("downloadTemplate").addEventListener("click", (e) => {
+    // klik lanjut ke preprocessing
+    btnNext.addEventListener("click", function () {
+      document.getElementById("tab-preprocess").click();
+    });
+  });
+
+  // Toggle animasi fade-in/out
+  const toggle = document.getElementById("toggleTemplateInfo");
+  const info = document.getElementById("templateInfo");
+
+  toggle.addEventListener("click", () => {
+    if (info.classList.contains("hidden")) {
+      info.classList.remove("hidden");
+      setTimeout(() => (info.style.opacity = "1"), 10);
+    } else {
+      info.style.opacity = "0";
+      setTimeout(() => info.classList.add("hidden"), 500);
+    }
+  });
+
+  // Download file CSV dari root folder
+  document.getElementById("downloadTemplate").addEventListener("click", (e) => {
     e.preventDefault(); // cegah buka tab baru
     fetch("/static/template_file.csv")
-        .then(response => {
-          if (!response.ok) throw new Error("File tidak ditemukan!");
-          return response.blob();
-        })
-        .then(blob => {
-          const link = document.createElement("a");
-          const url = window.URL.createObjectURL(blob);
-          link.href = url;
-          link.download = "template_file.csv";
-          document.body.appendChild(link);
-          link.click();
-          document.body.removeChild(link);
-          window.URL.revokeObjectURL(url);
-        })
-        .catch(err => {
-          console.error(err);
-          alert("File template tidak ditemukan di folder static!");
-        });
+      .then((response) => {
+        if (!response.ok) throw new Error("File tidak ditemukan!");
+        return response.blob();
+      })
+      .then((blob) => {
+        const link = document.createElement("a");
+        const url = window.URL.createObjectURL(blob);
+        link.href = url;
+        link.download = "template_file.csv";
+        document.body.appendChild(link);
+        link.click();
+        document.body.removeChild(link);
+        window.URL.revokeObjectURL(url);
+      })
+      .catch((err) => {
+        console.error(err);
+        alert("File template tidak ditemukan di folder static!");
+      });
+  });
+
+  document.addEventListener("DOMContentLoaded", function () {
+    const options = document.querySelectorAll(".option");
+    options.forEach((opt) => {
+      opt.addEventListener("click", () => {
+        const desc = opt.querySelector("p.text-sm");
+        desc.classList.toggle("hidden");
+      });
     });
 
-      document.addEventListener("DOMContentLoaded", function() {
-      const options = document.querySelectorAll(".option");
-      options.forEach(opt => {
-        opt.addEventListener("click", () => {
-          const desc = opt.querySelector("p.text-sm");
-          desc.classList.toggle("hidden");
-        });
+    const preprocessBtn = document.getElementById("btnPreprocess");
+    const downloadBtn = document.getElementById("btnDownload");
+
+    document.addEventListener("DOMContentLoaded", function () {
+      const btnAnalyze = document.getElementById("btnAnalyze");
+      const infoBox = document.getElementById("preprocessInfo");
+      const downloadBtn = document.getElementById("btnDownload");
+      let preprocessDone = false;
+
+      // tandai jika preprocessing selesai
+      document.getElementById("btnPreprocess").addEventListener("click", () => {
+        setTimeout(() => (preprocessDone = true), 2000);
       });
 
-      const preprocessBtn = document.getElementById("btnPreprocess");
-      const downloadBtn = document.getElementById("btnDownload");
+      btnAnalyze.addEventListener("click", async () => {
+        if (!preprocessDone) {
+          // tampilkan info tapi tetap lanjut
+          infoBox.classList.remove("hidden");
+          setTimeout(() => infoBox.classList.add("hidden"), 6000);
+        }
+        btnAnalyze.disabled = true;
+        btnAnalyze.innerHTML =
+          '<i class="fa-solid fa-spinner fa-spin"></i> Menganalisis...';
 
-      preprocessBtn.addEventListener("click", async () => {
-        preprocessBtn.disabled = true;
-        preprocessBtn.innerHTML = '<i class="fa-solid fa-spinner fa-spin"></i> Memproses...';
-
+        const model = document.querySelector(
+          'input[name="model"]:checked'
+        ).value;
         const fileName = document.getElementById("fileName").textContent;
+
         const formData = new FormData();
         formData.append("filename", fileName);
-        [
-          "case_folding", "remove_punct", "remove_numbers",
-          "stopword", "tokenization", "stemming", "lemmatization"
-        ].forEach(id => {
-          formData.append(id, document.getElementById(id).checked);
-        });
+        formData.append("model", model);
 
-        const res = await fetch("/preprocess", { method: "POST", body: formData });
+        const res = await fetch("/analyze_model", {
+          method: "POST",
+          body: formData,
+        });
         const data = await res.json();
 
         if (data.status === "success") {
-          downloadBtn.href = `/uploads/${data.file}`;
-          downloadBtn.classList.remove("hidden");
-          alert("Preprocessing selesai! File siap diunduh.");
+          alert(`Analisis ${model.toUpperCase()} selesai!`);
+          document
+            .querySelectorAll(".tab-content")
+            .forEach((el) => el.classList.add("hidden"));
+          document.getElementById("content-result").classList.remove("hidden");
+          document
+            .getElementById("tab-result")
+            .classList.add("text-indigo-600", "font-semibold");
+          document.getElementById("analysisResult").innerHTML = data.html;
         } else {
-          alert("Gagal melakukan preprocessing: " + data.message);
+          alert("Gagal melakukan analisis topik: " + data.message);
         }
 
-        preprocessBtn.disabled = false;
-        preprocessBtn.innerHTML = '<i class="fa-solid fa-play"></i> Mulai Preprocessing';
+        btnAnalyze.disabled = false;
+        btnAnalyze.innerHTML =
+          '<i class="fa-solid fa-magnifying-glass-chart"></i> Mulai Analisis Topik';
       });
+      // btnAnalyze.addEventListener("click", async () => {
+      // btnAnalyze.disabled = true;
+      // btnAnalyze.innerHTML =
+      //     '<i class="fa-solid fa-spinner fa-spin"></i> Menganalisis...';
+
+      //   const model = document.querySelector(
+      //     'input[name="model"]:checked'
+      //   ).value;
+      //   const fileName = document.getElementById("fileName").textContent;
+
+      //   const formData = new FormData();
+      //   formData.append("filename", fileName);
+      //   formData.append("model", model);
+
+      //   const res = await fetch("/analyze_model", {
+      //     method: "POST",
+      //     body: formData,
+      //   });
+      //   const data = await res.json();
+
+      //   if (data.status === "success") {
+      //     alert(`Analisis ${model.toUpperCase()} selesai!`);
+      //     // buka tab hasil analisis
+      //     document
+      //       .querySelectorAll(".tab-content")
+      //       .forEach((el) => el.classList.add("hidden"));
+      //     document.getElementById("content-result").classList.remove("hidden");
+      //     document
+      //       .getElementById("tab-result")
+      //       .classList.add("text-indigo-600", "font-semibold");
+      //     // tampilkan hasil
+      //     document.getElementById("analysisResult").innerHTML = data.html;
+      //   } else {
+      //     alert("Gagal melakukan analisis topik: " + data.message);
+      //   }
+
+      //   btnAnalyze.disabled = false;
+      //   btnAnalyze.innerHTML =
+      //     '<i class="fa-solid fa-magnifying-glass-chart"></i> Mulai Analisis Topik';
+      // });
     });
+    preprocessBtn.addEventListener("click", async () => {
+      preprocessBtn.disabled = true;
+      preprocessBtn.innerHTML =
+        '<i class="fa-solid fa-spinner fa-spin"></i> Memproses...';
+
+      const fileName = document.getElementById("fileName").textContent;
+      const formData = new FormData();
+      formData.append("filename", fileName);
+      [
+        "case_folding",
+        "remove_punct",
+        "remove_numbers",
+        "stopword",
+        "tokenization",
+        "stemming",
+        "lemmatization",
+      ].forEach((id) => {
+        formData.append(id, document.getElementById(id).checked);
+      });
+
+      const res = await fetch("/preprocess", {
+        method: "POST",
+        body: formData,
+      });
+      const data = await res.json();
+
+      if (data.status === "success") {
+        downloadBtn.href = `/uploads/${data.file}`;
+        downloadBtn.classList.remove("hidden");
+        alert("Preprocessing selesai! File siap diunduh.");
+      } else {
+        alert("Gagal melakukan preprocessing: " + data.message);
+      }
+
+      preprocessBtn.disabled = false;
+      preprocessBtn.innerHTML =
+        '<i class="fa-solid fa-play"></i> Mulai Preprocessing';
+    });
+  });
 </script>
 
-
 <style>
-@keyframes fadeIn {
-  from { opacity: 0; transform: translateY(-10px); }
-  to { opacity: 1; transform: translateY(0); }
-}
-.animate-fade-in {
-  animation: fadeIn 0.4s ease-in-out;
-}
+  @keyframes fadeIn {
+    from {
+      opacity: 0;
+      transform: translateY(-10px);
+    }
+    to {
+      opacity: 1;
+      transform: translateY(0);
+    }
+  }
+  .animate-fade-in {
+    animation: fadeIn 0.4s ease-in-out;
+  }
 </style>
 
 {% endblock %}
