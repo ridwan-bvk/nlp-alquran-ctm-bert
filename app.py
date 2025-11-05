@@ -122,6 +122,9 @@ def preprocess():
 def analyze_model():
     from flask import request, jsonify
     import os, pandas as pd
+    import numpy as np
+    from collections import Counter
+    import json
 
     filename = request.form.get("filename")
     model_type = request.form.get("model")
@@ -134,70 +137,195 @@ def analyze_model():
     text_col = "processed_text" if "processed_text" in df.columns else df.columns[-1]
     texts = df[text_col].astype(str).tolist()
 
-    topics = []
+    results = {
+        "model_type": model_type,
+        "topics": [],
+        "sources": [],
+        "visualization_data": {},
+        "search_data": []
+    }
 
     try:
-        # ======== LDA ==========
         if model_type == "lda":
             from sklearn.decomposition import LatentDirichletAllocation
             from sklearn.feature_extraction.text import CountVectorizer
 
-            vectorizer = CountVectorizer(max_df=0.95, min_df=2, stop_words='english')
+            # Vectorize teks
+            vectorizer = CountVectorizer(max_df=0.95, min_df=2, max_features=1000, stop_words=None)
             X = vectorizer.fit_transform(texts)
-            lda = LatentDirichletAllocation(n_components=5, random_state=42)
+            
+            # Train LDA model
+            lda = LatentDirichletAllocation(n_components=5, random_state=42, max_iter=10)
             lda.fit(X)
+            
+            # Hitung distribusi topik per dokumen
+            topic_distribution = lda.transform(X)
+            
+            # Ambil topik dan kata kunci
+            feature_names = vectorizer.get_feature_names_out()
+            
+            for topic_idx, topic in enumerate(lda.components_):
+                top_words_idx = topic.argsort()[:-10 - 1:-1]
+                top_words = [feature_names[i] for i in top_words_idx]
+                word_scores = [topic[i] for i in top_words_idx]
+                
+                # Hitung persentase dokumen yang dominan pada topik ini
+                dominant_topics = topic_distribution.argmax(axis=1)
+                topic_percentage = (np.sum(dominant_topics == topic_idx) / len(texts)) * 100
+                
+                # Cari dokumen yang mewakili topik ini
+                topic_docs_idx = np.where(dominant_topics == topic_idx)[0][:3]  # Ambil 3 dokumen pertama
+                representative_sources = []
+                
+                for doc_idx in topic_docs_idx:
+                    if doc_idx < len(df):
+                        doc_info = {
+                            "source": f"Dokumen {doc_idx + 1}",
+                            "content_preview": texts[doc_idx][:100] + "..." if len(texts[doc_idx]) > 100 else texts[doc_idx]
+                        }
+                        # Coba ambil informasi ayat/surat jika ada
+                        if 'verse' in df.columns and 'chapter' in df.columns:
+                            doc_info["verse"] = f"{df.iloc[doc_idx]['chapter']}:{df.iloc[doc_idx]['verse']}"
+                        representative_sources.append(doc_info)
+                
+                topic_data = {
+                    "topic_id": topic_idx + 1,
+                    "name": f"Topik {topic_idx + 1}",
+                    "keywords": top_words,
+                    "word_scores": word_scores.tolist(),
+                    "percentage": round(topic_percentage, 1),
+                    "representative_sources": representative_sources
+                }
+                results["topics"].append(topic_data)
 
-            for idx, topic in enumerate(lda.components_):
-                words = [vectorizer.get_feature_names_out()[i] for i in topic.argsort()[:-10 - 1:-1]]
-                topics.append(f"<strong>Topik {idx+1}:</strong> {', '.join(words)}")
+            # Data untuk visualisasi
+            results["visualization_data"] = {
+                "topic_distribution": [topic["percentage"] for topic in results["topics"]],
+                "topic_names": [topic["name"] for topic in results["topics"]],
+                "model_type": "LDA"
+            }
 
-        # ======== CTM (Correlated Topic Model) ==========
         elif model_type == "ctm":
             try:
                 import tomotopy as tp
+                
+                # Persiapan data untuk CTM
                 model = tp.CTModel(k=5, seed=42)
-
-                # Tokenisasi sederhana
+                
+                # Tokenisasi dokumen
                 for doc in texts:
                     tokens = [t.lower() for t in str(doc).split() if len(t) > 2]
-                    if tokens:
+                    if len(tokens) > 0:
                         model.add_doc(tokens)
-
-                model.train(0)
-                for i in range(100):
+                
+                # Training model
+                model.burn_in = 100
+                for i in range(0, 100, 10):
                     model.train(10)
-                print(f"[INFO] Log-likelihood: {model.ll_per_word}")
-
-                # Ambil topik
+                
+                # Analisis hasil
                 for k in range(model.k):
-                    top_words = [w for w, _ in model.get_topic_words(k, top_n=10)]
-                    topics.append(f"<strong>Topik {k+1}:</strong> {', '.join(top_words)}")
+                    top_words = [word for word, _ in model.get_topic_words(k, top_n=10)]
+                    
+                    # Hitung persentase dokumen untuk topik ini
+                    topic_count = 0
+                    for doc in model.docs:
+                        topic_dist = doc.get_topic_dist()
+                        if np.argmax(topic_dist) == k:
+                            topic_count += 1
+                    
+                    topic_percentage = (topic_count / len(model.docs)) * 100 if model.docs else 0
+                    
+                    topic_data = {
+                        "topic_id": k + 1,
+                        "name": f"Topik {k + 1}",
+                        "keywords": top_words,
+                        "percentage": round(topic_percentage, 1),
+                        "representative_sources": []
+                    }
+                    results["topics"].append(topic_data)
+                
+                results["visualization_data"] = {
+                    "topic_distribution": [topic["percentage"] for topic in results["topics"]],
+                    "topic_names": [topic["name"] for topic in results["topics"]],
+                    "model_type": "CTM"
+                }
 
             except Exception as e:
                 return jsonify({"status": "error", "message": f"Gagal menjalankan Correlated Topic Model: {str(e)}"}), 500
 
-        # ======== BERTopic ==========
         elif model_type == "bertopic":
-            from bertopic import BERTopic
-            topic_model = BERTopic(language="indonesian")
-            topic_model.fit(texts)
-            info = topic_model.get_topic_info().head(5)
-            for _, row in info.iterrows():
-                topics.append(f"<strong>{row['Name']}</strong>: {row['Representation']}")
+            try:
+                from bertopic import BERTopic
+                
+                # Train BERTopic model
+                topic_model = BERTopic(language="multilingual", calculate_probabilities=True)
+                topics, probabilities = topic_model.fit_transform(texts)
+                
+                # Dapatkan info topik
+                topic_info = topic_model.get_topic_info()
+                
+                for _, row in topic_info.iterrows():
+                    if row['Topic'] != -1:  # Exclude outlier topic
+                        topic_words = topic_model.get_topic(row['Topic'])
+                        keywords = [word for word, _ in topic_words[:10]]
+                        
+                        topic_data = {
+                            "topic_id": row['Topic'],
+                            "name": row['Name'],
+                            "keywords": keywords,
+                            "percentage": round(row['Count'] / len(texts) * 100, 1),
+                            "representative_sources": []
+                        }
+                        results["topics"].append(topic_data)
+                
+                results["visualization_data"] = {
+                    "topic_distribution": [topic["percentage"] for topic in results["topics"]],
+                    "topic_names": [topic["name"] for topic in results["topics"]],
+                    "model_type": "BERTopic"
+                }
+
+            except Exception as e:
+                return jsonify({"status": "error", "message": f"Gagal menjalankan BERTopic: {str(e)}"}), 500
 
         else:
             return jsonify({"status": "error", "message": "Model tidak dikenali."}), 400
 
+        # Siapkan data untuk pencarian
+        for topic in results["topics"]:
+            for keyword in topic["keywords"]:
+                results["search_data"].append({
+                    "keyword": keyword,
+                    "topic_id": topic["topic_id"],
+                    "topic_name": topic["name"],
+                    "percentage": topic["percentage"]
+                })
+
+        # Data sumber dokumen
+        if len(df) > 0:
+            sample_size = min(10, len(df))
+            for i in range(sample_size):
+                source_info = {
+                    "doc_id": i + 1,
+                    "preview": texts[i][:150] + "..." if len(texts[i]) > 150 else texts[i]
+                }
+                # Tambahkan info ayat/surat jika ada
+                if 'verse' in df.columns and 'chapter' in df.columns:
+                    source_info["reference"] = f"{df.iloc[i]['chapter']}:{df.iloc[i]['verse']}"
+                elif 'surah' in df.columns and 'ayat' in df.columns:
+                    source_info["reference"] = f"{df.iloc[i]['surah']}:{df.iloc[i]['ayat']}"
+                else:
+                    source_info["reference"] = f"Dokumen {i + 1}"
+                
+                results["sources"].append(source_info)
+
+        return jsonify({
+            "status": "success", 
+            "results": results
+        })
+
     except Exception as e:
         return jsonify({"status": "error", "message": f"Terjadi kesalahan: {str(e)}"}), 500
-
-    html = "<div class='space-y-3'>" + "".join([
-        f"<div class='bg-emerald-50 p-3 rounded-lg border border-emerald-200'>{t}</div>"
-        for t in topics
-    ]) + "</div>"
-
-    return jsonify({"status": "success", "html": html})
-
 
 
 if __name__ == "__main__":
