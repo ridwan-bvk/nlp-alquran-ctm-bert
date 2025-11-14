@@ -7,7 +7,7 @@
         href="{{ url_for('index') }}"
         class="inline-flex items-center text-emerald-700 hover:underline"
       >
-        <i class="fa-solid fa-arrow-left mr-2"></i> Kembali
+        <i class="fa-solid fa-arrow-left mr-2"></i> Kembali Menu Utama
       </a>
     </div>
 
@@ -28,6 +28,149 @@
       </p>
     </div>
 
+    <!-- Modal untuk Kelola Stopwords -->
+    <div
+      id="stopwordsModal"
+      class="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center hidden z-50"
+    >
+      <div class="bg-white rounded-lg p-6 w-full max-w-2xl">
+        <h3 class="text-lg font-semibold mb-4">Kelola Stopwords</h3>
+        <div class="mb-4">
+          <label class="flex items-center gap-2 mb-2">
+            <input
+              type="checkbox"
+              id="stopword_file"
+              class="text-emerald-600"
+            />
+            <span class="font-medium"
+              >Gunakan Stopwords dari File (stopwords_id.txt)</span
+            >
+          </label>
+          <div class="flex gap-2 mb-3">
+            <button
+              id="btnEditStopwords"
+              class="bg-blue-600 text-white px-3 py-1 rounded text-sm hover:bg-blue-700"
+            >
+              <i class="fa-solid fa-edit mr-1"></i> Edit File
+            </button>
+            <button
+              id="btnViewStopwords"
+              class="bg-slate-600 text-white px-3 py-1 rounded text-sm hover:bg-slate-700"
+            >
+              <i class="fa-solid fa-eye mr-1"></i> Lihat Stopwords
+            </button>
+          </div>
+        </div>
+        <div class="mb-4">
+          <label class="flex items-center gap-2">
+            <input
+              type="checkbox"
+              id="stopword_sastrawi"
+              class="text-emerald-600"
+            />
+            <span class="font-medium">Gunakan Stopwords Sastrawi</span>
+          </label>
+        </div>
+        <div class="flex justify-end gap-2">
+          <button
+            id="btnCloseStopwords"
+            class="bg-slate-300 px-4 py-2 rounded hover:bg-slate-400"
+          >
+            Tutup
+          </button>
+        </div>
+      </div>
+    </div>
+
+    <!-- Modal untuk Edit Stopwords -->
+    <div
+      id="editStopwordsModal"
+      class="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center hidden z-50"
+    >
+      <div class="bg-white rounded-lg p-6 w-full max-w-3xl">
+        <h3 class="text-lg font-semibold mb-4">Edit Stopwords File</h3>
+        <textarea
+          id="stopwordsContent"
+          class="w-full h-64 p-2 border rounded mb-4"
+          placeholder="Masukkan stopwords, satu kata per baris..."
+        ></textarea>
+        <div class="flex justify-between">
+          <button
+            id="btnResetStopwords"
+            class="bg-amber-500 text-white px-4 py-2 rounded hover:bg-amber-600"
+          >
+            <i class="fa-solid fa-rotate-left mr-1"></i> Reset ke Default
+          </button>
+          <div class="flex gap-2">
+            <button
+              id="btnCancelEdit"
+              class="bg-slate-300 px-4 py-2 rounded hover:bg-slate-400"
+            >
+              Batal
+            </button>
+            <button
+              id="btnSaveStopwords"
+              class="bg-emerald-600 text-white px-4 py-2 rounded hover:bg-emerald-700"
+            >
+              Simpan
+            </button>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Modal untuk Lihat Stopwords -->
+    <div
+      id="viewStopwordsModal"
+      class="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center hidden z-50"
+    >
+      <div class="bg-white rounded-lg p-6 w-full max-w-3xl">
+        <h3 class="text-lg font-semibold mb-4">Daftar Stopwords</h3>
+        <div
+          id="stopwordsList"
+          class="h-64 overflow-y-auto border rounded p-4 mb-4 bg-slate-50"
+        >
+          <p class="text-slate-500">Memuat daftar stopwords...</p>
+        </div>
+        <div class="flex justify-end">
+          <button
+            id="btnCloseView"
+            class="bg-slate-300 px-4 py-2 rounded hover:bg-slate-400"
+          >
+            Tutup
+          </button>
+        </div>
+      </div>
+    </div>
+
+    <!-- Modal untuk Display Hasil Preprocessing -->
+    <div
+      id="displayModal"
+      class="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center hidden z-50"
+    >
+      <div class="bg-white rounded-lg p-6 w-full max-w-4xl">
+        <h3 class="text-lg font-semibold mb-4">Hasil Preprocessing</h3>
+        <div class="bg-slate-100 p-4 rounded mb-4 max-h-96 overflow-y-auto">
+          <pre
+            id="preprocessedContent"
+            class="whitespace-pre-wrap text-sm"
+          ></pre>
+        </div>
+        <div class="flex justify-end">
+          <button
+            id="btnCloseDisplay"
+            class="bg-slate-300 px-4 py-2 rounded hover:bg-slate-400"
+          >
+            Tutup
+          </button>
+        </div>
+      </div>
+    </div>
+    <!-- Message Box -->
+    <div id="messageBox" class="fixed top-5 right-5 hidden z-50 px-5 py-3 rounded-lg shadow-lg flex items-center gap-2 animate-fade-in">
+      <i class="fa-solid fa-circle-check"></i>
+      <span>Pesan akan muncul di sini</span>
+    </div>
     <!-- Tabs -->
     <div class="flex justify-center mb-10">
       <div
@@ -228,459 +371,435 @@
     <!-- Preprocessing Content -->
     <div id="content-preprocess" class="tab-content hidden">
       <div class="bg-white rounded-xl p-8 shadow-sm border border-emerald-100">
-        <h2
-          class="text-lg font-semibold mb-4 flex items-center gap-2 text-emerald-800"
+       <!-- <div class="mb-4"> -->
+        <div
+          class="section-toggle bg-white rounded-xl p-4 shadow-sm border border-emerald-100 cursor-pointer flex justify-between items-center"
         >
-          <i class="fa-solid fa-gears text-emerald-600"></i> Konfigurasi
-          Preprocessing
-        </h2>
-
-        <div id="preprocessOptions" class="space-y-3">
-          <div
-            class="option bg-slate-50 p-4 rounded-lg border flex justify-between items-center cursor-pointer"
+          <h3
+            class="text-lg font-semibold text-emerald-800 flex items-center gap-2"
           >
-            <div>
-              <p class="font-semibold text-slate-800">Case Folding</p>
-              <p class="text-sm text-slate-500 hidden">
-                Konversi semua teks ke huruf kecil
-              </p>
-            </div>
-            <label class="inline-flex items-center cursor-pointer">
-              <input
-                type="checkbox"
-                id="case_folding"
-                checked
-                class="sr-only peer"
-              />
-              <div
-                class="w-10 h-6 bg-gray-300 peer-checked:bg-emerald-600 rounded-full relative transition"
-              >
-                <div
-                  class="absolute left-1 top-1 w-4 h-4 bg-white rounded-full transition peer-checked:translate-x-4"
-                ></div>
-              </div>
-            </label>
-          </div>
-
-          <div
-            class="option bg-slate-50 p-4 rounded-lg border flex justify-between items-center cursor-pointer"
-          >
-            <div>
-              <p class="font-semibold text-slate-800">Remove Punctuation</p>
-              <p class="text-sm text-slate-500 hidden">Menghapus tanda baca</p>
-            </div>
-            <label class="inline-flex items-center cursor-pointer">
-              <input
-                type="checkbox"
-                id="remove_punct"
-                checked
-                class="sr-only peer"
-              />
-              <div
-                class="w-10 h-6 bg-gray-300 peer-checked:bg-emerald-600 rounded-full relative transition"
-              >
-                <div
-                  class="absolute left-1 top-1 w-4 h-4 bg-white rounded-full transition peer-checked:translate-x-4"
-                ></div>
-              </div>
-            </label>
-          </div>
-
-          <div
-            class="option bg-slate-50 p-4 rounded-lg border flex justify-between items-center cursor-pointer"
-          >
-            <div>
-              <p class="font-semibold text-slate-800">Remove Numbers</p>
-              <p class="text-sm text-slate-500 hidden">
-                Menghapus angka dari teks
-              </p>
-            </div>
-            <label class="inline-flex items-center cursor-pointer">
-              <input
-                type="checkbox"
-                id="remove_numbers"
-                checked
-                class="sr-only peer"
-              />
-              <div
-                class="w-10 h-6 bg-gray-300 peer-checked:bg-emerald-600 rounded-full relative transition"
-              >
-                <div
-                  class="absolute left-1 top-1 w-4 h-4 bg-white rounded-full transition peer-checked:translate-x-4"
-                ></div>
-              </div>
-            </label>
-          </div>
-
-          <div
-            class="option bg-slate-50 p-4 rounded-lg border flex justify-between items-center cursor-pointer"
-          >
-            <div>
-              <p class="font-semibold text-slate-800">Stopword Removal</p>
-              <p class="text-sm text-slate-500 hidden">Menghapus kata umum</p>
-            </div>
-            <label class="inline-flex items-center cursor-pointer">
-              <input
-                type="checkbox"
-                id="stopword"
-                checked
-                class="sr-only peer"
-              />
-              <div
-                class="w-10 h-6 bg-gray-300 peer-checked:bg-emerald-600 rounded-full relative transition"
-              >
-                <div
-                  class="absolute left-1 top-1 w-4 h-4 bg-white rounded-full transition peer-checked:translate-x-4"
-                ></div>
-              </div>
-            </label>
-          </div>
-
-          <div
-            class="option bg-slate-50 p-4 rounded-lg border flex justify-between items-center cursor-pointer"
-          >
-            <div>
-              <p class="font-semibold text-slate-800">Tokenization</p>
-              <p class="text-sm text-slate-500 hidden">
-                Memecah teks menjadi token
-              </p>
-            </div>
-            <label class="inline-flex items-center cursor-pointer">
-              <input
-                type="checkbox"
-                id="tokenization"
-                checked
-                class="sr-only peer"
-              />
-              <div
-                class="w-10 h-6 bg-gray-300 peer-checked:bg-emerald-600 rounded-full relative transition"
-              >
-                <div
-                  class="absolute left-1 top-1 w-4 h-4 bg-white rounded-full transition peer-checked:translate-x-4"
-                ></div>
-              </div>
-            </label>
-          </div>
-
-          <div
-            class="option bg-slate-50 p-4 rounded-lg border flex justify-between items-center cursor-pointer"
-          >
-            <div>
-              <p class="font-semibold text-slate-800">Stemming</p>
-              <p class="text-sm text-slate-500 hidden">
-                Mengubah kata ke bentuk dasar
-              </p>
-            </div>
-            <label class="inline-flex items-center cursor-pointer">
-              <input
-                type="checkbox"
-                id="stemming"
-                checked
-                class="sr-only peer"
-              />
-              <div
-                class="w-10 h-6 bg-gray-300 peer-checked:bg-emerald-600 rounded-full relative transition"
-              >
-                <div
-                  class="absolute left-1 top-1 w-4 h-4 bg-white rounded-full transition peer-checked:translate-x-4"
-                ></div>
-              </div>
-            </label>
-          </div>
-
-          <div
-            class="option bg-slate-50 p-4 rounded-lg border flex justify-between items-center cursor-pointer"
-          >
-            <div>
-              <p class="font-semibold text-slate-800">Lemmatization</p>
-              <p class="text-sm text-slate-500 hidden">
-                Normalisasi kata ke bentuk leksikon
-              </p>
-            </div>
-            <label class="inline-flex items-center cursor-pointer">
-              <input
-                type="checkbox"
-                id="lemmatization"
-                checked
-                class="sr-only peer"
-              />
-              <div
-                class="w-10 h-6 bg-gray-300 peer-checked:bg-emerald-600 rounded-full relative transition"
-              >
-                <div
-                  class="absolute left-1 top-1 w-4 h-4 bg-white rounded-full transition peer-checked:translate-x-4"
-                ></div>
-              </div>
-            </label>
-          </div>
+            <i class="fa-solid fa-gears text-emerald-600"></i> Konfigurasi
+            Preprocessing
+          </h3>
+          <i
+            class="fa-solid fa-chevron-down transition-transform duration-300"
+          ></i>
         </div>
+        <div
+          class="section-content bg-white rounded-xl p-6 shadow-sm border border-emerald-100 mt-2 hidden"
+        >
+          <div id="preprocessOptions" class="space-y-3">
+            <!-- Opsi preprocessing yang sudah ada -->
+            <div
+              class="option bg-slate-50 p-4 rounded-lg border flex justify-between items-center cursor-pointer"
+            >
+              <div>
+                <p class="font-semibold text-slate-800">Case Folding</p>
+                <p class="text-sm text-slate-500 hidden">
+                  Konversi semua teks ke huruf kecil
+                </p>
+              </div>
+              <label class="inline-flex items-center cursor-pointer">
+                <input
+                  type="checkbox"
+                  id="case_folding"
+                  checked
+                  class="sr-only peer"
+                />
+                <div
+                  class="w-10 h-6 bg-gray-300 peer-checked:bg-emerald-600 rounded-full relative transition"
+                >
+                  <div
+                    class="absolute left-1 top-1 w-4 h-4 bg-white rounded-full transition peer-checked:translate-x-4"
+                  ></div>
+                </div>
+              </label>
+            </div>
 
-        <div class="mt-8 flex justify-between items-center">
-          <button
-            id="btnBack"
-            class="bg-slate-200 px-5 py-2 rounded-lg hover:bg-slate-300 flex items-center gap-2"
-          >
-            <i class="fa-solid fa-arrow-left"></i> Kembali
-          </button>
-          <div class="flex items-center gap-3">
+            <!-- Tambahkan stopword dengan opsi ganda -->
+            <div
+              class="option bg-slate-50 p-4 rounded-lg border flex justify-between items-center cursor-pointer"
+            >
+              <div>
+                <p class="font-semibold text-slate-800">Stopword Removal</p>
+                <p class="text-sm text-slate-500 hidden">
+                  Menghapus kata umum dengan opsi file atau Sastrawi
+                </p>
+              </div>
+              <div class="flex items-center gap-2">
+                <button
+                  id="btnManageStopwords"
+                  class="text-sm bg-blue-500 text-white px-2 py-1 rounded hover:bg-blue-600"
+                >
+                  <i class="fa-solid fa-gear mr-1"></i> Kelola
+                </button>
+                <label class="inline-flex items-center cursor-pointer">
+                  <input
+                    type="checkbox"
+                    id="stopword"
+                    checked
+                    class="sr-only peer"
+                  />
+                  <div
+                    class="w-10 h-6 bg-gray-300 peer-checked:bg-emerald-600 rounded-full relative transition"
+                  >
+                    <div
+                      class="absolute left-1 top-1 w-4 h-4 bg-white rounded-full transition peer-checked:translate-x-4"
+                    ></div>
+                  </div>
+                </label>
+              </div>
+            </div>
+
+            <div
+              class="option bg-slate-50 p-4 rounded-lg border flex justify-between items-center cursor-pointer"
+            >
+              <div>
+                <p class="font-semibold text-slate-800">Tokenization</p>
+                <p class="text-sm text-slate-500 hidden">
+                  Memecah teks menjadi token
+                </p>
+              </div>
+              <label class="inline-flex items-center cursor-pointer">
+                <input
+                  type="checkbox"
+                  id="tokenization"
+                  checked
+                  class="sr-only peer"
+                />
+                <div
+                  class="w-10 h-6 bg-gray-300 peer-checked:bg-emerald-600 rounded-full relative transition"
+                >
+                  <div
+                    class="absolute left-1 top-1 w-4 h-4 bg-white rounded-full transition peer-checked:translate-x-4"
+                  ></div>
+                </div>
+              </label>
+            </div>
+
+            <div
+              class="option bg-slate-50 p-4 rounded-lg border flex justify-between items-center cursor-pointer"
+            >
+              <div>
+                <p class="font-semibold text-slate-800">Stemming</p>
+                <p class="text-sm text-slate-500 hidden">
+                  Mengubah kata ke bentuk dasar
+                </p>
+              </div>
+              <label class="inline-flex items-center cursor-pointer">
+                <input
+                  type="checkbox"
+                  id="stemming"
+                  checked
+                  class="sr-only peer"
+                />
+                <div
+                  class="w-10 h-6 bg-gray-300 peer-checked:bg-emerald-600 rounded-full relative transition"
+                >
+                  <div
+                    class="absolute left-1 top-1 w-4 h-4 bg-white rounded-full transition peer-checked:translate-x-4"
+                  ></div>
+                </div>
+              </label>
+            </div>
+
+            <div
+              class="option bg-slate-50 p-4 rounded-lg border flex justify-between items-center cursor-pointer"
+            >
+              <div>
+                <p class="font-semibold text-slate-800">Lemmatization</p>
+                <p class="text-sm text-slate-500 hidden">
+                  Normalisasi kata ke bentuk leksikon
+                </p>
+              </div>
+              <label class="inline-flex items-center cursor-pointer">
+                <input
+                  type="checkbox"
+                  id="lemmatization"
+                  checked
+                  class="sr-only peer"
+                />
+                <div
+                  class="w-10 h-6 bg-gray-300 peer-checked:bg-emerald-600 rounded-full relative transition"
+                >
+                  <div
+                    class="absolute left-1 top-1 w-4 h-4 bg-white rounded-full transition peer-checked:translate-x-4"
+                  ></div>
+                </div>
+              </label>
+            </div>
+          </div>
+
+          <!-- Ganti bagian tombol dengan ini -->
+          <!-- <div class="mt-8 flex justify-between items-center">
             <button
-              id="btnPreprocess"
-              class="bg-emerald-600 text-white px-6 py-2 rounded-lg hover:bg-emerald-700 inline-flex items-center gap-2"
+              id="btnBack"
+              class="bg-slate-200 px-5 py-2 rounded-lg hover:bg-slate-300 flex items-center gap-2"
             >
-              <i class="fa-solid fa-play"></i> Mulai Preprocessing
+              <i class="fa-solid fa-arrow-left"></i> Kembali
             </button>
-            <a
-              id="btnDownload"
-              href="#"
-              class="hidden bg-blue-600 text-white px-5 py-2 rounded-lg hover:bg-blue-700 inline-flex items-center gap-2"
-            >
-              <i class="fa-solid fa-download"></i> Download Hasil
-            </a>
+            <div class="flex items-center gap-3">
+              <button
+                id="btnPreprocess"
+                class="bg-emerald-600 text-white px-6 py-2 rounded-lg hover:bg-emerald-700 inline-flex items-center gap-2"
+              >
+                <i class="fa-solid fa-play"></i> Mulai Preprocessing
+              </button>
+              <a
+                id="btnDownload"
+                href="#"
+                class="hidden bg-blue-600 text-white px-5 py-2 rounded-lg hover:bg-blue-700 inline-flex items-center gap-2"
+              >
+                <i class="fa-solid fa-download"></i> Download Hasil
+              </a>
+              <button
+                id="btnDisplay"
+                class="hidden bg-purple-600 text-white px-5 py-2 rounded-lg hover:bg-purple-700 inline-flex items-center gap-2"
+              >
+                <i class="fa-solid fa-eye"></i> Display
+              </button>
+            </div>
           </div>
-        </div>
-      </div>
-
-      <hr class="my-8 border-emerald-200" />
-
-      <!-- Pilihan Model Analisis -->
-      <div class="bg-emerald-50 p-6 rounded-lg border border-emerald-200 mt-6">
-        <h3 class="text-emerald-800 font-semibold mb-4 flex items-center gap-2">
-          <i class="fa-solid fa-brain"></i> Model Analisis Topik
-        </h3>
-
-        <div id="modelButtons" class="flex flex-wrap gap-4">
-          <label
-            class="flex items-center gap-2 cursor-pointer bg-white px-4 py-2 rounded-lg border border-emerald-300 hover:bg-emerald-100 transition"
-          >
-            <input
-              type="checkbox"
-              name="model"
-              value="lda"
-              class="text-emerald-600 focus:ring-emerald-500"
-              checked
-            />
-            <span class="font-medium text-slate-700"
-              >LDA (Latent Dirichlet Allocation)</span
-            >
-          </label>
-          <label
-            class="flex items-center gap-2 cursor-pointer bg-white px-4 py-2 rounded-lg border border-emerald-300 hover:bg-emerald-100 transition"
-          >
-            <input
-              type="checkbox"
-              name="model"
-              value="ctm"
-              class="text-emerald-600 focus:ring-emerald-500"
-            />
-            <span class="font-medium text-slate-700"
-              >CTM (Correlated Topic Model)</span
-            >
-          </label>
-          <label
-            class="flex items-center gap-2 cursor-pointer bg-white px-4 py-2 rounded-lg border border-emerald-300 hover:bg-emerald-100 transition"
-          >
-            <input
-              type="checkbox"
-              name="model"
-              value="bertopic"
-              class="text-emerald-600 focus:ring-emerald-500"
-            />
-            <span class="font-medium text-slate-700">BERTopic</span>
-          </label>
-        </div>
-
-        <div class="mt-6 flex justify-end gap-3">
-          <button
-            id="btnAnalyze"
-            class="bg-indigo-600 text-white px-6 py-2 rounded-lg hover:bg-indigo-700 inline-flex items-center gap-2"
-          >
-            <i class="fa-solid fa-magnifying-glass-chart"></i> Mulai Analisis
-            Topik
+        </div> -->
+        <div class="mt-6 flex justify-between items-center">
+        <button id="btnBack" class="bg-slate-200 px-5 py-2 rounded-lg hover:bg-slate-300 flex items-center gap-2">
+          <i class="fa-solid fa-arrow-left"></i> Kembali
+        </button>
+        <div class="flex items-center gap-3">
+          <button id="btnPreprocess" class="bg-emerald-600 text-white px-6 py-2 rounded-lg hover:bg-emerald-700 inline-flex items-center gap-2">
+            <i class="fa-solid fa-play"></i> Mulai Preprocessing
           </button>
-        </div>
-
-        <div
-          id="analyzeProgress"
-          class="hidden mt-4 w-full bg-gray-200 rounded-full h-3 overflow-hidden"
-        >
-          <div
-            class="bg-indigo-600 h-3 rounded-full animate-pulse w-0"
-            id="progressBar"
-          ></div>
-        </div>
-
-        <div
-          id="preprocessInfo"
-          class="hidden mt-4 text-amber-700 bg-amber-100 border border-amber-200 rounded-lg px-4 py-3 text-sm flex items-center gap-2"
-        >
-          <i class="fa-solid fa-circle-info"></i>
-          <span
-            >Anda belum melakukan preprocessing. Disarankan melakukan
-            preprocessing sebelum analisis agar hasil lebih optimal.</span
-          >
+          <button id="btnDisplay" class="hidden bg-purple-600 text-white px-5 py-2 rounded-lg hover:bg-purple-700 inline-flex items-center gap-2">
+            <i class="fa-solid fa-eye"></i> Display
+          </button>
         </div>
       </div>
     </div>
+  </div>
+        <hr class="my-8 border-emerald-200" />
 
-    <!-- Hasil Analisis Content -->
-    <div id="content-analysis" class="tab-content hidden">
-      <div class="bg-white rounded-xl p-8 shadow-sm border border-emerald-100">
-        <!-- Tombol Kembali -->
-        <div class="mb-6">
-          <button
-            id="btnBackToPreprocess"
-            class="inline-flex items-center text-emerald-700 hover:underline"
-          >
-            <i class="fa-solid fa-arrow-left mr-2"></i> Kembali ke Preprocessing
-          </button>
-        </div>
+        <!-- Tambahkan setelah konfigurasi preprocessing -->
+       <div class="mb-4">
+    <div class="section-toggle bg-white rounded-xl p-4 shadow-sm border border-emerald-100 cursor-pointer flex justify-between items-center">
+      <h3 class="text-lg font-semibold text-emerald-800 flex items-center gap-2">
+        <i class="fa-solid fa-list"></i> File Hasil Preprocessing
+      </h3>
+      <i class="fa-solid fa-chevron-down transition-transform duration-300"></i>
+    </div>
+    <div class="section-content bg-white rounded-xl p-6 shadow-sm border border-emerald-100 mt-2 hidden">
+      <div id="preprocessedFilesList" class="space-y-3">
+        <p class="text-sm text-slate-500 text-center py-4">Belum ada file preprocessing. Lakukan preprocessing terlebih dahulu.</p>
+      </div>
+    </div>
+  </div>
 
-        <!-- Judul Hasil Analisis -->
-        <div class="mb-8">
-          <h2 class="text-2xl font-bold text-emerald-800 mb-2">
-            Hasil Analisis Topik Keagamaan
-          </h2>
-          <p id="resultsSummary" class="text-slate-600">
-            Sedang menganalisis...
-          </p>
-        </div>
+  <!-- Section Model Analisis Topik (Toggleable) -->
+  <div class="mb-4">
+    <div class="section-toggle bg-white rounded-xl p-4 shadow-sm border border-emerald-100 cursor-pointer flex justify-between items-center">
+      <h3 class="text-lg font-semibold text-emerald-800 flex items-center gap-2">
+        <i class="fa-solid fa-brain"></i> Model Analisis Topik
+      </h3>
+      <i class="fa-solid fa-chevron-down transition-transform duration-300"></i>
+    </div>
+    <div class="section-content bg-emerald-50 p-6 rounded-lg border border-emerald-200 mt-2 hidden">
+      <div id="modelButtons" class="flex flex-wrap gap-4 mb-4">
+        <label class="flex items-center gap-2 cursor-pointer bg-white px-4 py-2 rounded-lg border border-emerald-300 hover:bg-emerald-100 transition">
+          <input type="checkbox" name="model" value="lda" class="text-emerald-600 focus:ring-emerald-500" checked>
+          <span class="font-medium text-slate-700">LDA (Latent Dirichlet Allocation)</span>
+        </label>
+        <label class="flex items-center gap-2 cursor-pointer bg-white px-4 py-2 rounded-lg border border-emerald-300 hover:bg-emerald-100 transition">
+          <input type="checkbox" name="model" value="ctm" class="text-emerald-600 focus:ring-emerald-500">
+          <span class="font-medium text-slate-700">CTM (Correlated Topic Model)</span>
+        </label>
+        <label class="flex items-center gap-2 cursor-pointer bg-white px-4 py-2 rounded-lg border border-emerald-300 hover:bg-emerald-100 transition">
+          <input type="checkbox" name="model" value="bertopic" class="text-emerald-600 focus:ring-emerald-500">
+          <span class="font-medium text-slate-700">BERTopic</span>
+        </label>
+      </div>
 
-        <!-- Progress Bar -->
-        <div id="analyzeProgressContainer" class="hidden mb-8">
-          <div class="flex justify-between items-center mb-2">
-            <span class="text-sm font-medium text-emerald-700"
-              >Sedang menganalisis...</span
+      <div class="flex justify-end gap-3">
+        <button id="btnAnalyze" class="bg-indigo-600 text-white px-6 py-2 rounded-lg hover:bg-indigo-700 inline-flex items-center gap-2">
+          <i class="fa-solid fa-magnifying-glass-chart"></i> Mulai Analisis Topik
+        </button>
+      </div>
+
+      <div id="analyzeProgress" class="hidden mt-4 w-full bg-gray-200 rounded-full h-3 overflow-hidden">
+        <div class="bg-indigo-600 h-3 rounded-full animate-pulse w-0" id="progressBar"></div>
+      </div>
+
+      <div id="preprocessInfo" class="hidden mt-4 text-amber-700 bg-amber-100 border border-amber-200 rounded-lg px-4 py-3 text-sm flex items-center gap-2">
+        <i class="fa-solid fa-circle-info"></i>
+        <span>Anda belum melakukan preprocessing. Disarankan melakukan preprocessing sebelum analisis agar hasil lebih optimal.</span>
+      </div>
+    </div>
+  </div>
+</div>
+
+      <!-- Hasil Analisis Content -->
+      <div id="content-analysis" class="tab-content hidden">
+        <div
+          class="bg-white rounded-xl p-8 shadow-sm border border-emerald-100"
+        >
+          <!-- Tombol Kembali -->
+          <div class="mb-6">
+            <button
+              id="btnBackToPreprocess"
+              class="inline-flex items-center text-emerald-700 hover:underline"
             >
-            <span
-              id="progressPercent"
-              class="text-sm font-medium text-emerald-700"
-              >0%</span
-            >
+              <i class="fa-solid fa-arrow-left mr-2"></i> Kembali ke
+              Preprocessing
+            </button>
           </div>
-          <div class="w-full bg-gray-200 rounded-full h-3">
-            <div
-              id="analyzeProgressBar"
-              class="bg-emerald-600 h-3 rounded-full transition-all duration-300"
-              style="width: 0%"
-            ></div>
+
+          <!-- Judul Hasil Analisis -->
+          <div class="mb-8">
+            <h2 class="text-2xl font-bold text-emerald-800 mb-2">
+              Hasil Analisis Topik Keagamaan
+            </h2>
+            <p id="resultsSummary" class="text-slate-600">
+              Sedang menganalisis...
+            </p>
           </div>
-        </div>
 
-        <!-- Tab Navigation untuk hasil analisis -->
-        <div class="mb-6 border-b border-emerald-200">
-          <nav class="-mb-px flex space-x-8">
-            <button
-              class="analysis-tab-btn border-b-2 border-emerald-500 text-emerald-600 px-1 py-4 text-sm font-medium"
-              data-tab="topics"
-            >
-              <i class="fa-solid fa-list mr-2"></i>Topik Utama
-            </button>
-            <button
-              class="analysis-tab-btn border-transparent text-slate-500 hover:text-slate-700 hover:border-slate-300 px-1 py-4 text-sm font-medium"
-              data-tab="sources"
-            >
-              <i class="fa-solid fa-book mr-2"></i>Sumber & Referensi
-            </button>
-            <button
-              class="analysis-tab-btn border-transparent text-slate-500 hover:text-slate-700 hover:border-slate-300 px-1 py-4 text-sm font-medium"
-              data-tab="visualization"
-            >
-              <i class="fa-solid fa-chart-bar mr-2"></i>Visualisasi
-            </button>
-            <button
-              class="analysis-tab-btn border-transparent text-slate-500 hover:text-slate-700 hover:border-slate-300 px-1 py-4 text-sm font-medium"
-              data-tab="search"
-            >
-              <i class="fa-solid fa-search mr-2"></i>Pencarian
-            </button>
-          </nav>
-        </div>
-
-        <!-- Tab Content untuk hasil analisis -->
-
-        <!-- Tab 1: Topik Utama -->
-        <div id="tab-topics" class="analysis-tab-content space-y-6">
-          <div id="modelResultsContainer">
-            <!-- Hasil dari setiap model akan ditampilkan di sini -->
-          </div>
-        </div>
-
-        <!-- Tab 2: Sumber & Referensi -->
-        <div id="tab-sources" class="analysis-tab-content hidden">
-          <div class="bg-slate-50 rounded-lg p-6">
-            <h3 class="text-lg font-semibold text-emerald-800 mb-4">
-              Dokumen Sumber
-            </h3>
-            <div id="sourcesContainer" class="space-y-4">
-              <!-- Data sumber akan diisi oleh JavaScript -->
+          <!-- Progress Bar -->
+          <div id="analyzeProgressContainer" class="hidden mb-8">
+            <div class="flex justify-between items-center mb-2">
+              <span class="text-sm font-medium text-emerald-700"
+                >Sedang menganalisis...</span
+              >
+              <span
+                id="progressPercent"
+                class="text-sm font-medium text-emerald-700"
+                >0%</span
+              >
+            </div>
+            <div class="w-full bg-gray-200 rounded-full h-3">
+              <div
+                id="analyzeProgressBar"
+                class="bg-emerald-600 h-3 rounded-full transition-all duration-300"
+                style="width: 0%"
+              ></div>
             </div>
           </div>
-        </div>
 
-        <!-- Tab 3: Visualisasi -->
-        <div id="tab-visualization" class="analysis-tab-content hidden">
-          <div class="bg-white rounded-lg border border-emerald-200 p-6">
-            <h3 class="text-lg font-semibold text-emerald-800 mb-4">
-              Visualisasi Hasil Analisis
-            </h3>
-            <div
-              id="visualizationContainer"
-              class="grid grid-cols-1 lg:grid-cols-2 gap-6"
-            >
-              <!-- Grafik akan diisi oleh JavaScript -->
-              <div class="bg-slate-50 rounded-lg p-4 border border-slate-200">
-                <h4 class="font-medium text-slate-700 mb-3">
-                  Distribusi Topik
-                </h4>
-                <div
-                  id="topicDistributionChart"
-                  class="h-64 flex items-center justify-center text-slate-400"
-                >
-                  <p>Grafik distribusi topik akan ditampilkan di sini</p>
+          <!-- Tab Navigation untuk hasil analisis -->
+          <div class="mb-6 border-b border-emerald-200">
+            <nav class="-mb-px flex space-x-8">
+              <button
+                class="analysis-tab-btn border-b-2 border-emerald-500 text-emerald-600 px-1 py-4 text-sm font-medium"
+                data-tab="topics"
+              >
+                <i class="fa-solid fa-list mr-2"></i>Topik Utama
+              </button>
+              <button
+                class="analysis-tab-btn border-transparent text-slate-500 hover:text-slate-700 hover:border-slate-300 px-1 py-4 text-sm font-medium"
+                data-tab="sources"
+              >
+                <i class="fa-solid fa-book mr-2"></i>Sumber & Referensi
+              </button>
+              <button
+                class="analysis-tab-btn border-transparent text-slate-500 hover:text-slate-700 hover:border-slate-300 px-1 py-4 text-sm font-medium"
+                data-tab="visualization"
+              >
+                <i class="fa-solid fa-chart-bar mr-2"></i>Visualisasi
+              </button>
+              <button
+                class="analysis-tab-btn border-transparent text-slate-500 hover:text-slate-700 hover:border-slate-300 px-1 py-4 text-sm font-medium"
+                data-tab="search"
+              >
+                <i class="fa-solid fa-search mr-2"></i>Pencarian
+              </button>
+            </nav>
+          </div>
+
+          <!-- Tab Content untuk hasil analisis -->
+
+          <!-- Tab 1: Topik Utama -->
+          <div id="tab-topics" class="analysis-tab-content space-y-6">
+            <div id="modelResultsContainer">
+              <!-- Hasil dari setiap model akan ditampilkan di sini -->
+            </div>
+          </div>
+
+          <!-- Tab 2: Sumber & Referensi -->
+          <div id="tab-sources" class="analysis-tab-content hidden">
+            <div class="bg-slate-50 rounded-lg p-6">
+              <h3 class="text-lg font-semibold text-emerald-800 mb-4">
+                Dokumen Sumber
+              </h3>
+              <div id="sourcesContainer" class="space-y-4">
+                <!-- Data sumber akan diisi oleh JavaScript -->
+              </div>
+            </div>
+          </div>
+
+          <!-- Tab 3: Visualisasi -->
+          <div id="tab-visualization" class="analysis-tab-content hidden">
+            <div class="bg-white rounded-lg border border-emerald-200 p-6">
+              <h3 class="text-lg font-semibold text-emerald-800 mb-4">
+                Visualisasi Hasil Analisis
+              </h3>
+              <div
+                id="visualizationContainer"
+                class="grid grid-cols-1 lg:grid-cols-2 gap-6"
+              >
+                <!-- Grafik akan diisi oleh JavaScript -->
+                <div class="bg-slate-50 rounded-lg p-4 border border-slate-200">
+                  <h4 class="font-medium text-slate-700 mb-3">
+                    Distribusi Topik
+                  </h4>
+                  <div
+                    id="topicDistributionChart"
+                    class="h-64 flex items-center justify-center text-slate-400"
+                  >
+                    <p>Grafik distribusi topik akan ditampilkan di sini</p>
+                  </div>
+                </div>
+                <div class="bg-slate-50 rounded-lg p-4 border border-slate-200">
+                  <h4 class="font-medium text-slate-700 mb-3">
+                    Kata Kunci Topik
+                  </h4>
+                  <div
+                    id="keywordCloud"
+                    class="h-64 flex items-center justify-center text-slate-400"
+                  >
+                    <p>Word cloud akan ditampilkan di sini</p>
+                  </div>
                 </div>
               </div>
-              <div class="bg-slate-50 rounded-lg p-4 border border-slate-200">
-                <h4 class="font-medium text-slate-700 mb-3">
-                  Kata Kunci Topik
-                </h4>
-                <div
-                  id="keywordCloud"
-                  class="h-64 flex items-center justify-center text-slate-400"
-                >
-                  <p>Word cloud akan ditampilkan di sini</p>
-                </div>
-              </div>
             </div>
           </div>
-        </div>
 
-        <!-- Tab 4: Pencarian -->
-        <div id="tab-search" class="analysis-tab-content hidden">
-          <div class="bg-white rounded-lg border border-emerald-200 p-6">
-            <h3 class="text-lg font-semibold text-emerald-800 mb-4">
-              Pencarian Topik dan Kata Kunci
-            </h3>
+          <!-- Tab 4: Pencarian -->
+          <div id="tab-search" class="analysis-tab-content hidden">
+            <div class="bg-white rounded-lg border border-emerald-200 p-6">
+              <h3 class="text-lg font-semibold text-emerald-800 mb-4">
+                Pencarian Topik dan Kata Kunci
+              </h3>
 
-            <!-- Search Box -->
-            <div class="mb-6">
-              <div class="relative">
-                <input
-                  type="text"
-                  id="searchInput"
-                  placeholder="Cari kata kunci atau topik..."
-                  class="w-full px-4 py-3 border border-emerald-300 rounded-lg focus:ring-2 focus:ring-emerald-500 focus:border-emerald-500"
-                />
-                <i
-                  class="fa-solid fa-search absolute right-3 top-3 text-slate-400"
-                ></i>
+              <!-- Search Box -->
+              <div class="mb-6">
+                <div class="relative">
+                  <input
+                    type="text"
+                    id="searchInput"
+                    placeholder="Cari kata kunci atau topik..."
+                    class="w-full px-4 py-3 border border-emerald-300 rounded-lg focus:ring-2 focus:ring-emerald-500 focus:border-emerald-500"
+                  />
+                  <i
+                    class="fa-solid fa-search absolute right-3 top-3 text-slate-400"
+                  ></i>
+                </div>
               </div>
-            </div>
 
-            <!-- Search Results -->
-            <div id="searchResults" class="space-y-4">
-              <div class="text-center text-slate-500 py-8">
-                <i class="fa-solid fa-search text-3xl mb-3 text-slate-300"></i>
-                <p>Masukkan kata kunci untuk mencari topik terkait</p>
+              <!-- Search Results -->
+              <div id="searchResults" class="space-y-4">
+                <div class="text-center text-slate-500 py-8">
+                  <i
+                    class="fa-solid fa-search text-3xl mb-3 text-slate-300"
+                  ></i>
+                  <p>Masukkan kata kunci untuk mencari topik terkait</p>
+                </div>
               </div>
             </div>
           </div>
@@ -688,157 +807,511 @@
       </div>
     </div>
   </div>
-</div>
 
-<script>
-  document.addEventListener("DOMContentLoaded", function () {
-    const tabs = document.querySelectorAll(".tab-btn");
-    const contents = document.querySelectorAll(".tab-content");
+<script src="{{ url_for('static', filename='js/quran_analysis.js') }}"></script>
+  <!-- <script>
+    function toggleDesc(el) {
+      const desc = el.querySelector(".desc");
+      desc.classList.toggle("hidden");
+      desc.classList.toggle("animate-fadeIn");
+    }
 
-    tabs.forEach((tab) => {
-      tab.addEventListener("click", () => {
-        // reset styles
-        tabs.forEach((t) =>
-          t.classList.remove(
+    document.addEventListener("DOMContentLoaded", function () {
+      const tabs = document.querySelectorAll(".tab-btn");
+      const contents = document.querySelectorAll(".tab-content");
+
+      tabs.forEach((tab) => {
+        tab.addEventListener("click", () => {
+          // reset styles
+          tabs.forEach((t) =>
+            t.classList.remove(
+              "text-emerald-700",
+              "border-b-2",
+              "border-emerald-600"
+            )
+          );
+          tabs.forEach((t) => t.classList.add("text-slate-500"));
+          contents.forEach((c) => c.classList.add("hidden"));
+          // activate selected
+          tab.classList.add(
             "text-emerald-700",
             "border-b-2",
             "border-emerald-600"
-          )
-        );
-        tabs.forEach((t) => t.classList.add("text-slate-500"));
-        contents.forEach((c) => c.classList.add("hidden"));
-        // activate selected
-        tab.classList.add(
-          "text-emerald-700",
-          "border-b-2",
-          "border-emerald-600"
-        );
-        tab.classList.remove("text-slate-500");
-        document
-          .getElementById("content-" + tab.id.split("-")[1])
-          .classList.remove("hidden");
+          );
+          tab.classList.remove("text-slate-500");
+          document
+            .getElementById("content-" + tab.id.split("-")[1])
+            .classList.remove("hidden");
+        });
       });
-    });
-  });
 
-  document.addEventListener("DOMContentLoaded", function () {
-    const fileInput = document.getElementById("fileInput");
-    const uploadForm = document.getElementById("uploadForm");
-    const fileInfo = document.getElementById("uploadedFileInfo");
-    const fileName = document.getElementById("fileName");
-    const fileSize = document.getElementById("fileSize");
-    const nextStep = document.getElementById("nextStep");
-    const messageBox = document.getElementById("messageBox");
-    const btnNext = document.getElementById("btnNext");
+      const fileInput = document.getElementById("fileInput");
+      const uploadForm = document.getElementById("uploadForm");
+      const fileInfo = document.getElementById("uploadedFileInfo");
+      const fileName = document.getElementById("fileName");
+      const fileSize = document.getElementById("fileSize");
+      const nextStep = document.getElementById("nextStep");
+      const messageBox = document.getElementById("messageBox");
+      const btnNext = document.getElementById("btnNext");
 
-    // tampilkan info file saat dipilih
-    fileInput.addEventListener("change", function () {
-      const file = fileInput.files[0];
-      if (file) {
-        fileName.textContent = file.name;
-        fileSize.textContent = (file.size / 1024).toFixed(2) + " KB";
-        fileInfo.classList.remove("hidden");
-      }
-    });
+      // tampilkan info file saat dipilih
+      fileInput.addEventListener("change", function () {
+        const file = fileInput.files[0];
+        if (file) {
+          fileName.textContent = file.name;
+          fileSize.textContent = (file.size / 1024).toFixed(2) + " KB";
+          fileInfo.classList.remove("hidden");
+        }
+      });
 
-    // upload form simulasi AJAX
-    uploadForm.addEventListener("submit", async function (e) {
-      e.preventDefault();
+      // upload form simulasi AJAX
+      uploadForm.addEventListener("submit", async function (e) {
+        e.preventDefault();
 
-      const file = fileInput.files[0];
-      if (!file) {
-        alert("Silakan pilih file terlebih dahulu.");
-        return;
-      }
+        const file = fileInput.files[0];
+        if (!file) {
+          alert("Silakan pilih file terlebih dahulu.");
+          return;
+        }
 
-      const formData = new FormData();
-      formData.append("file", file);
+        const formData = new FormData();
+        formData.append("file", file);
 
-      const res = await fetch("/upload", { method: "POST", body: formData });
-      const text = await res.text();
+        const res = await fetch("/upload", { method: "POST", body: formData });
+        const text = await res.text();
 
-      if (res.ok) {
+        if (res.ok) {
+          messageBox.classList.remove("hidden");
+          setTimeout(() => messageBox.classList.add("hidden"), 2000);
+
+          // tampilkan info file di UI
+          fileName.textContent = file.name;
+          fileSize.textContent = (file.size / 1024).toFixed(2) + " KB";
+          fileInfo.classList.remove("hidden");
+
+          // tampilkan tombol lanjut
+          nextStep.classList.remove("hidden");
+        } else {
+          alert("Gagal mengunggah file: " + text);
+        }
+        // simulasi upload
         messageBox.classList.remove("hidden");
-        setTimeout(() => messageBox.classList.add("hidden"), 2000);
+        setTimeout(() => {
+          messageBox.classList.add("hidden");
+          nextStep.classList.remove("hidden");
+        }, 2500);
+      });
 
-        // tampilkan info file di UI
-        fileName.textContent = file.name;
-        fileSize.textContent = (file.size / 1024).toFixed(2) + " KB";
-        fileInfo.classList.remove("hidden");
+      // klik lanjut ke preprocessing
+      btnNext.addEventListener("click", function () {
+        document.getElementById("tab-preprocess").click();
+      });
 
-        // tampilkan tombol lanjut
-        nextStep.classList.remove("hidden");
-      } else {
-        alert("Gagal mengunggah file: " + text);
+      // Modal management
+      const stopwordsModal = document.getElementById("stopwordsModal");
+      const editStopwordsModal = document.getElementById("editStopwordsModal");
+      const viewStopwordsModal = document.getElementById("viewStopwordsModal");
+      const displayModal = document.getElementById("displayModal");
+
+      // Stopwords management
+      document
+        .getElementById("btnManageStopwords")
+        .addEventListener("click", function () {
+          stopwordsModal.classList.remove("hidden");
+        });
+
+      document
+        .getElementById("btnCloseStopwords")
+        .addEventListener("click", function () {
+          stopwordsModal.classList.add("hidden");
+        });
+
+      // Edit stopwords
+      document
+        .getElementById("btnEditStopwords")
+        .addEventListener("click", async function () {
+          const response = await fetch("/get_stopwords");
+          const data = await response.json();
+          if (data.status === "success") {
+            document.getElementById("stopwordsContent").value = data.content;
+            editStopwordsModal.classList.remove("hidden");
+            stopwordsModal.classList.add("hidden");
+          }
+        });
+
+      document
+        .getElementById("btnSaveStopwords")
+        .addEventListener("click", async function () {
+          const content = document.getElementById("stopwordsContent").value;
+          const response = await fetch("/save_stopwords", {
+            method: "POST",
+            headers: {
+              "Content-Type": "application/json",
+            },
+            body: JSON.stringify({ content: content }),
+          });
+          const data = await response.json();
+          if (data.status === "success") {
+            alert("Stopwords berhasil disimpan!");
+            editStopwordsModal.classList.add("hidden");
+          } else {
+            alert("Gagal menyimpan stopwords: " + data.message);
+          }
+        });
+
+      document
+        .getElementById("btnResetStopwords")
+        .addEventListener("click", async function () {
+          if (confirm("Reset stopwords ke default?")) {
+            const response = await fetch("/reset_stopwords", {
+              method: "POST",
+            });
+            const data = await response.json();
+            if (data.status === "success") {
+              document.getElementById("stopwordsContent").value = data.content;
+              alert("Stopwords berhasil direset!");
+            }
+          }
+        });
+
+      document
+        .getElementById("btnCancelEdit")
+        .addEventListener("click", function () {
+          editStopwordsModal.classList.add("hidden");
+        });
+
+      // View stopwords
+      document
+        .getElementById("btnViewStopwords")
+        .addEventListener("click", async function () {
+          const response = await fetch("/get_stopwords");
+          const data = await response.json();
+          if (data.status === "success") {
+            const stopwordsList = document.getElementById("stopwordsList");
+            const words = data.content
+              .split("\n")
+              .filter((word) => word.trim());
+            stopwordsList.innerHTML = words
+              .map(
+                (word) =>
+                  `<span class="inline-block bg-emerald-100 text-emerald-800 px-2 py-1 rounded text-sm m-1">${word.trim()}</span>`
+              )
+              .join("");
+            viewStopwordsModal.classList.remove("hidden");
+            stopwordsModal.classList.add("hidden");
+          }
+        });
+
+      document
+        .getElementById("btnCloseView")
+        .addEventListener("click", function () {
+          viewStopwordsModal.classList.add("hidden");
+        });
+
+      // Display hasil preprocessing
+      document
+        .getElementById("btnDisplay")
+        .addEventListener("click", async function () {
+          const fileName = document
+            .getElementById("btnDownload")
+            .getAttribute("href")
+            .replace("/uploads/", "");
+          const response = await fetch(
+            `/read_preprocessed_file?filename=${fileName}`
+          );
+          const data = await response.json();
+          if (data.status === "success") {
+            document.getElementById("preprocessedContent").textContent =
+              data.content;
+            displayModal.classList.remove("hidden");
+          } else {
+            alert("Gagal memuat konten: " + data.message);
+          }
+        });
+
+      document
+        .getElementById("btnCloseDisplay")
+        .addEventListener("click", function () {
+          displayModal.classList.add("hidden");
+        });
+
+
+        // Fungsi untuk toggle section
+        function setupSectionToggles() {
+          document.querySelectorAll('.section-toggle').forEach(toggle => {
+            toggle.addEventListener('click', function() {
+              const content = this.nextElementSibling;
+              const icon = this.querySelector('i.fa-chevron-down');
+              
+              // Toggle visibility
+              content.classList.toggle('hidden');
+              
+              // Rotate icon
+              icon.classList.toggle('rotate-180');
+            });
+          });
+        }
+      // Fungsi untuk menampilkan pesan
+      function showMessage(message, type = 'success') {
+        const messageBox = document.getElementById('messageBox');
+        const icon = type === 'success' ? 'fa-circle-check' : 'fa-circle-exclamation';
+        const bgColor = type === 'success' ? 'bg-emerald-100 border-emerald-300 text-emerald-800' : 'bg-red-100 border-red-300 text-red-800';
+        
+        messageBox.innerHTML = `
+          <i class="fa-solid ${icon}"></i>
+          <span>${message}</span>
+        `;
+        messageBox.className = `fixed top-5 right-5 ${bgColor} border px-5 py-3 rounded-lg shadow-lg flex items-center gap-2 animate-fade-in`;
+        messageBox.classList.remove('hidden');
+        
+        setTimeout(() => {
+          messageBox.classList.add('hidden');
+        }, 4000);
       }
-      // simulasi upload
-      messageBox.classList.remove("hidden");
-      setTimeout(() => {
-        messageBox.classList.add("hidden");
-        nextStep.classList.remove("hidden");
-      }, 2500);
-    });
 
-    // klik lanjut ke preprocessing
-    btnNext.addEventListener("click", function () {
-      document.getElementById("tab-preprocess").click();
-    });
-  });
 
-  // Toggle animasi fade-in/out
-  const toggle = document.getElementById("toggleTemplateInfo");
-  const info = document.getElementById("templateInfo");
+      // Load daftar file preprocessing
+      async function loadPreprocessedFiles() {
+        try {
+          const response = await fetch('/list_preprocessed_files');
+          const data = await response.json();
+          const container = document.getElementById('preprocessedFilesList');
+          
+          if (data.status === 'success' && data.files.length > 0) {
+            container.innerHTML = data.files.map(file => `
+              <div class="flex items-center gap-3 bg-slate-50 p-3 rounded-lg border border-slate-200 hover:bg-slate-100 transition">
+                <input type="checkbox" name="preprocessed_file" value="${file}" class="preprocessed-file-checkbox text-emerald-600">
+                <div class="flex-1">
+                  <span class="font-medium text-slate-700">${file}</span>
+                  <button class="view-file-btn text-sm text-blue-600 hover:text-blue-800 ml-2" data-filename="${file}">
+                    <i class="fa-solid fa-eye mr-1"></i>Lihat
+                  </button>
+                </div>
+                <span class="text-xs text-slate-500">
+                  ${new Date().toLocaleDateString('id-ID')}
+                </span>
+              </div>
+            `).join('');
+            
+            // Tambahkan event listener untuk tombol lihat
+            document.querySelectorAll('.view-file-btn').forEach(btn => {
+              btn.addEventListener('click', async function() {
+                const filename = this.getAttribute('data-filename');
+                await displayPreprocessedFile(filename);
+              });
+            });
+          } else {
+            container.innerHTML = '<p class="text-sm text-slate-500 text-center py-4">Belum ada file preprocessing. Lakukan preprocessing terlebih dahulu.</p>';
+          }
+        } catch (error) {
+          console.error('Error loading preprocessed files:', error);
+          showMessage('Gagal memuat daftar file', 'error');
+        }
+      }
 
-  toggle.addEventListener("click", () => {
-    if (info.classList.contains("hidden")) {
-      info.classList.remove("hidden");
-      setTimeout(() => (info.style.opacity = "1"), 10);
-    } else {
-      info.style.opacity = "0";
-      setTimeout(() => info.classList.add("hidden"), 500);
-    }
-  });
+      // Fungsi untuk menampilkan file preprocessing
+      async function displayPreprocessedFile(filename) {
+        try {
+          const response = await fetch(`/read_preprocessed_file?filename=${encodeURIComponent(filename)}`);
+          const data = await response.json();
+          
+          if (data.status === 'success') {
+            document.getElementById('preprocessedContent').textContent = data.content;
+            document.getElementById('displayModal').classList.remove('hidden');
+          } else {
+            showMessage('Gagal memuat konten file: ' + data.message, 'error');
+          }
+        } catch (error) {
+          console.error('Error displaying file:', error);
+          showMessage('Gagal memuat file', 'error');
+        }
+      }
 
-  // Download file CSV dari root folder
-  document.getElementById("downloadTemplate").addEventListener("click", (e) => {
-    e.preventDefault(); // cegah buka tab baru
-    fetch("/static/template_file.csv")
-      .then((response) => {
-        if (!response.ok) throw new Error("File tidak ditemukan!");
-        return response.blob();
-      })
-      .then((blob) => {
-        const link = document.createElement("a");
-        const url = window.URL.createObjectURL(blob);
-        link.href = url;
-        link.download = "template_file.csv";
-        document.body.appendChild(link);
-        link.click();
-        document.body.removeChild(link);
-        window.URL.revokeObjectURL(url);
-      })
-      .catch((err) => {
-        console.error(err);
-        alert("File template tidak ditemukan di folder static!");
-      });
-  });
 
-  document.addEventListener("DOMContentLoaded", function () {
-    const options = document.querySelectorAll(".option");
-    options.forEach((opt) => {
-      opt.addEventListener("click", () => {
-        const desc = opt.querySelector("p.text-sm");
-        desc.classList.toggle("hidden");
-      });
-    });
+      // Panggil fungsi ini ketika tab preprocessing dibuka
+      document
+        .getElementById("tab-preprocess")
+        .addEventListener("click", loadPreprocessedFiles);
 
-    const preprocessBtn = document.getElementById("btnPreprocess");
-    const downloadBtn = document.getElementById("btnDownload");
+      // Modifikasi event listener untuk preprocessing
+      document
+        .getElementById("btnPreprocess")
+        .addEventListener("click", async function () {
+          const fileName = document.getElementById("fileName").textContent;
+          const btnPreprocess = this;
+          
+          if (!fileName) {
+              showMessage('Silakan unggah file terlebih dahulu', 'error');
+              return;
+          } 
 
-    document.addEventListener("DOMContentLoaded", function () {
+          btnPreprocess.disabled = true;
+          btnPreprocess.innerHTML ='<i class="fa-solid fa-spinner fa-spin"></i> Memproses...';
+
+          const formData = new FormData();
+          formData.append("filename", fileName);
+
+          // Konfigurasi preprocessing dasar
+          const preprocessingOptions = [
+            "case_folding",            "remove_punct",            "remove_numbers",
+            "stopword",            "tokenization",            "stemming",            "lemmatization",
+          ];
+
+          preprocessingOptions.forEach((id) => {
+            formData.append(id, document.getElementById(id).checked);
+          });
+
+          // Tambahkan konfigurasi stopwords
+          formData.append(            "stopword_file",            document.getElementById("stopword_file").checked          );
+          formData.append(            "stopword_sastrawi",            document.getElementById("stopword_sastrawi").checked          );
+
+          try {
+           
+            const res = await fetch("/preprocess", {
+              method: "POST",
+              body: formData,
+            });
+            
+            const data = await res.json();
+
+            if (data.status === "success") {
+              document.getElementById(
+                "btnDownload"
+              ).href = `/uploads/${data.file}`;
+              
+              document.getElementById("btnDisplay").classList.remove("hidden");
+              document.getElementById("btnDownload").classList.remove("hidden");
+
+              // Reload daftar file
+              await loadPreprocessedFiles();
+
+               // Buka section file hasil preprocessing
+              const fileSection = document.querySelector('.section-toggle:nth-child(2)');
+              fileSection.click();
+              
+              showMessage('Preprocessing berhasil! File telah disimpan.', 'success');
+            } else {
+              showMessage('Gagal melakukan preprocessing: ' + data.message, 'error');
+            }
+          }catch (error) {
+              console.error('Error during preprocessing:', error);
+              showMessage('Terjadi kesalahan saat preprocessing', 'error');
+            } finally {
+              btnPreprocess.disabled = false;
+              btnPreprocess.innerHTML = '<i class="fa-solid fa-play"></i> Mulai Preprocessing';
+            }
+
+          btnPreprocess.disabled = false;
+          btnPreprocess.innerHTML =
+            '<i class="fa-solid fa-play"></i> Mulai Preprocessing';
+        });
+
+        // Event listener untuk tombol display
+        document.getElementById('btnDisplay').addEventListener('click', async function() {
+          const selectedFiles = Array.from(document.querySelectorAll('input[name="preprocessed_file"]:checked'));
+          if (selectedFiles.length === 0) {
+            showMessage('Pilih file preprocessing terlebih dahulu', 'error');
+            return;
+          }
+          
+          const filename = selectedFiles[0].value;
+          await displayPreprocessedFile(filename);
+        });
+
+
+        // Event listener untuk modal display
+          document.getElementById('btnCloseDisplay').addEventListener('click', function() {
+            document.getElementById('displayModal').classList.add('hidden');
+          });
+
+          document.getElementById('btnCloseDisplayBottom').addEventListener('click', function() {
+            document.getElementById('displayModal').add('hidden');
+          });
+
+          // Event listener untuk analisis topik
+          document.getElementById('btnAnalyze').addEventListener('click', async function() {
+            const selectedFiles = Array.from(document.querySelectorAll('input[name="preprocessed_file"]:checked'));
+            const models = Array.from(document.querySelectorAll('input[name="model"]:checked'));
+            
+            if (selectedFiles.length === 0) {
+              showMessage('Pilih setidaknya satu file hasil preprocessing!', 'error');
+              return;
+            }
+
+            if (models.length === 0) {
+              showMessage('Pilih setidaknya satu model analisis!', 'error');
+              return;
+            }
+
+            const filename = selectedFiles[0].value;
+            const btnAnalyze = this;
+            
+            btnAnalyze.disabled = true;
+            btnAnalyze.innerHTML = '<i class="fa-solid fa-spinner fa-spin"></i> Menganalisis...';
+
+            // Buka tab hasil analisis
+            document.getElementById('tab-analysis').click();
+
+            // Kirim permintaan untuk setiap model
+            let allResults = [];
+            
+            for (let i = 0; i < models.length; i++) {
+              const model = models[i];
+              const formData = new FormData();
+              formData.append('filename', filename);
+              formData.append('model', model);
+
+              try {
+                const res = await fetch('/analyze_model', {
+                  method: 'POST',
+                  body: formData
+                });
+                const data = await res.json();
+
+                if (data.status === 'success') {
+                  allResults.push(data.results);
+                  showMessage(`Analisis ${model.toUpperCase()} selesai!`, 'success');
+                } else {
+                  showMessage(`Gagal untuk model ${model}: ${data.message}`, 'error');
+                }
+              } catch (error) {
+                console.error(`Error untuk model ${model}:`, error);
+                showMessage(`Error untuk model ${model}`, 'error');
+              }
+            }
+
+            btnAnalyze.disabled = false;
+            btnAnalyze.innerHTML = '<i class="fa-solid fa-magnifying-glass-chart"></i> Mulai Analisis Topik';
+
+            // Tampilkan hasil analisis
+            if (allResults.length > 0) {
+              // Simpan hasil ke variabel global dan tampilkan
+              analysisResults = {
+                topics: allResults,
+                sources: allResults[0]?.sources || [],
+                visualization_data: allResults.map(r => r.visualization_data),
+                search_data: allResults.flatMap(r => r.search_data || [])
+              };
+              
+              // Update UI dengan hasil
+              displayTopicResults(allResults);
+              document.querySelector('.analysis-tab-btn[data-tab="topics"]').click();
+            }
+          });
+
+          // Inisialisasi ketika DOM siap
+          document.addEventListener('DOMContentLoaded', function() {
+            setupSectionToggles();
+            
+            // Load daftar file ketika tab preprocessing dibuka
+            document.getElementById('tab-preprocess').addEventListener('click', function() {
+              loadPreprocessedFiles();
+            });
+          });
+      /******************/
       const btnAnalyze = document.getElementById("btnAnalyze");
       const infoBox = document.getElementById("preprocessInfo");
-      const downloadBtn = document.getElementById("btnDownload");
+      // const downloadBtn = document.getElementById("btnDownload");
       let preprocessDone = false;
 
       // tandai jika preprocessing selesai
@@ -846,315 +1319,359 @@
         setTimeout(() => (preprocessDone = true), 2000);
       });
 
-      btnAnalyze.addEventListener("click", async () => {
-        if (!preprocessDone) {
-          // tampilkan info tapi tetap lanjut
-          infoBox.classList.remove("hidden");
-          setTimeout(() => infoBox.classList.add("hidden"), 6000);
-        }
-        btnAnalyze.disabled = true;
-        btnAnalyze.innerHTML =
-          '<i class="fa-solid fa-spinner fa-spin"></i> Menganalisis...';
+      // btnAnalyze.addEventListener("click", async () => {
+      // document
+      //   .getElementById("btnAnalyze")
+      //   .addEventListener("click", async function () {
+      //     const selectedFiles = Array.from(
+      //       document.querySelectorAll('input[name="preprocessed_file"]:checked')
+      //     ).map((el) => el.value);
+      //     if (selectedFiles.length === 0) {
+      //       alert("Pilih setidaknya satu file hasil preprocessing!");
+      //       return;
+      //     }
 
-        const model = document.querySelector(
-          'input[name="model"]:checked'
-        ).value;
+      //     const models = Array.from(
+      //       document.querySelectorAll('input[name="model"]:checked')
+      //     ).map((el) => el.value);
+      //     if (models.length === 0) {
+      //       alert("Pilih setidaknya satu model analisis!");
+      //       return;
+      //     }
+
+      //     // Untuk sekarang, kita hanya memproses file pertama yang dipilih
+      //     const filename = selectedFiles[0];
+
+      //     const btnAnalyze = this;
+
+      //     btnAnalyze.disabled = true;
+      //     btnAnalyze.innerHTML =
+      //       '<i class="fa-solid fa-spinner fa-spin"></i> Menganalisis...';
+
+      //     // if (!preprocessDone) {
+      //     //   // tampilkan info tapi tetap lanjut
+      //     //   infoBox.classList.remove("hidden");
+      //     //   setTimeout(() => infoBox.classList.add("hidden"), 6000);
+      //     // }
+      //     // btnAnalyze.disabled = true;
+      //     // btnAnalyze.innerHTML =
+      //     // '<i class="fa-solid fa-spinner fa-spin"></i> Menganalisis...';
+
+      //     const model = document.querySelector(
+      //       'input[name="model"]:checked'
+      //     ).value;
+      //     const fileName = document.getElementById("fileName").textContent;
+
+      //     const formData = new FormData();
+      //     formData.append("filename", fileName);
+      //     formData.append("model", model);
+
+      //     const res = await fetch("/analyze_model", {
+      //       method: "POST",
+      //       body: formData,
+      //     });
+      //     const data = await res.json();
+
+      //     if (data.status === "success") {
+      //       alert(`Analisis ${model.toUpperCase()} selesai!`);
+      //       document
+      //         .querySelectorAll(".tab-content")
+      //         .forEach((el) => el.classList.add("hidden"));
+      //       document
+      //         .getElementById("content-result")
+      //         .classList.remove("hidden");
+      //       document
+      //         .getElementById("tab-result")
+      //         .classList.add("text-indigo-600", "font-semibold");
+      //       document.getElementById("analysisResult").innerHTML = data.html;
+      //     } else {
+      //       alert("Gagal melakukan analisis topik: " + data.message);
+      //     }
+
+      //     btnAnalyze.disabled = false;
+      //     btnAnalyze.innerHTML =
+      //       '<i class="fa-solid fa-magnifying-glass-chart"></i> Mulai Analisis Topik';
+      //   });
+
+      const options = document.querySelectorAll(".option");
+      options.forEach((opt) => {
+        opt.addEventListener("click", () => {
+          const desc = opt.querySelector("p.text-sm");
+          desc.classList.toggle("hidden");
+        });
+      });
+      /******************/
+      const preprocessBtn = document.getElementById("btnPreprocess");
+      const downloadBtn = document.getElementById("btnDownload");
+
+      preprocessBtn.addEventListener("click", async () => {
+        preprocessBtn.disabled = true;
+        preprocessBtn.innerHTML =
+          '<i class="fa-solid fa-spinner fa-spin"></i> Memproses...';
+
         const fileName = document.getElementById("fileName").textContent;
-
         const formData = new FormData();
         formData.append("filename", fileName);
-        formData.append("model", model);
+        [
+          "case_folding",
+          "remove_punct",
+          "remove_numbers",
+          "stopword",
+          "tokenization",
+          "stemming",
+          "lemmatization",
+        ].forEach((id) => {
+          formData.append(id, document.getElementById(id).checked);
+        });
 
-        const res = await fetch("/analyze_model", {
+        const res = await fetch("/preprocess", {
           method: "POST",
           body: formData,
         });
         const data = await res.json();
 
         if (data.status === "success") {
-          alert(`Analisis ${model.toUpperCase()} selesai!`);
-          document
-            .querySelectorAll(".tab-content")
-            .forEach((el) => el.classList.add("hidden"));
-          document.getElementById("content-result").classList.remove("hidden");
-          document
-            .getElementById("tab-result")
-            .classList.add("text-indigo-600", "font-semibold");
-          document.getElementById("analysisResult").innerHTML = data.html;
+          downloadBtn.href = `/uploads/${data.file}`;
+          downloadBtn.classList.remove("hidden");
+          alert("Preprocessing selesai! File siap diunduh.");
         } else {
-          alert("Gagal melakukan analisis topik: " + data.message);
+          alert("Gagal melakukan preprocessing: " + data.message);
         }
 
-        btnAnalyze.disabled = false;
-        btnAnalyze.innerHTML =
-          '<i class="fa-solid fa-magnifying-glass-chart"></i> Mulai Analisis Topik';
-      });
-    });
-    preprocessBtn.addEventListener("click", async () => {
-      preprocessBtn.disabled = true;
-      preprocessBtn.innerHTML =
-        '<i class="fa-solid fa-spinner fa-spin"></i> Memproses...';
-
-      const fileName = document.getElementById("fileName").textContent;
-      const formData = new FormData();
-      formData.append("filename", fileName);
-      [
-        "case_folding",
-        "remove_punct",
-        "remove_numbers",
-        "stopword",
-        "tokenization",
-        "stemming",
-        "lemmatization",
-      ].forEach((id) => {
-        formData.append(id, document.getElementById(id).checked);
+        preprocessBtn.disabled = false;
+        preprocessBtn.innerHTML =
+          '<i class="fa-solid fa-play"></i> Mulai Preprocessing';
       });
 
-      const res = await fetch("/preprocess", {
-        method: "POST",
-        body: formData,
-      });
-      const data = await res.json();
-
-      if (data.status === "success") {
-        downloadBtn.href = `/uploads/${data.file}`;
-        downloadBtn.classList.remove("hidden");
-        alert("Preprocessing selesai! File siap diunduh.");
-      } else {
-        alert("Gagal melakukan preprocessing: " + data.message);
-      }
-
-      preprocessBtn.disabled = false;
-      preprocessBtn.innerHTML =
-        '<i class="fa-solid fa-play"></i> Mulai Preprocessing';
-    });
-
-    // Tombol kembali dari hasil analisis ke preprocessing
-    document
-      .getElementById("btnBackToPreprocess")
-      .addEventListener("click", () => {
-        document.getElementById("tab-preprocess").click();
-      });
-
-    // Fungsi untuk simulasi progress bar
-    function simulateProgress() {
-      const progressBar = document.getElementById("analyzeProgressBar");
-      const progressPercent = document.getElementById("progressPercent");
-      const progressContainer = document.getElementById(
-        "analyzeProgressContainer"
-      );
-
-      progressContainer.classList.remove("hidden");
-
-      let progress = 0;
-      const interval = setInterval(() => {
-        progress += Math.random() * 10;
-        if (progress >= 100) {
-          progress = 100;
-          clearInterval(interval);
-
-          // Setelah selesai, tampilkan hasil analisis
-          setTimeout(() => {
-            showAnalysisResults();
-          }, 500);
-        }
-
-        progressBar.style.width = `${progress}%`;
-        progressPercent.textContent = `${Math.round(progress)}%`;
-      }, 200);
-    }
-
-    // Fungsi untuk menampilkan hasil analisis
-    function showAnalysisResults() {
-      const progressContainer = document.getElementById(
-        "analyzeProgressContainer"
-      );
-      const resultsBody = document.getElementById("analysisResultsBody");
-      const resultsContent = document.getElementById("analysisResultsContent");
-
-      progressContainer.classList.add("hidden");
-
-      // Sembunyikan placeholder dan tampilkan hasil
-      resultsBody.innerHTML = "";
-      resultsContent.classList.remove("hidden");
-
-      // Scroll ke hasil analisis
-      resultsContent.scrollIntoView({ behavior: "smooth" });
-    }
-
-    // Update event listener untuk tombol analisis
-    document
-      .getElementById("btnAnalyze")
-      .addEventListener("click", async () => {
-        const models = Array.from(
-          document.querySelectorAll('input[name="model"]:checked')
-        ).map((el) => el.value);
-
-        if (models.length === 0) {
-          alert("Pilih setidaknya satu model analisis!");
-          return;
-        }
-
-        // Buka tab hasil analisis
-        document.getElementById("tab-analysis").click();
-
-        // Mulai progress bar
-        simulateProgress();
-      });
-
-    // Variabel global untuk menyimpan hasil analisis
-    let analysisResults = {};
-
-    // Fungsi untuk menampilkan progress bar
-    function showProgressBar() {
-      const progressContainer = document.getElementById(
-        "analyzeProgressContainer"
-      );
-      const progressBar = document.getElementById("analyzeProgressBar");
-      const progressPercent = document.getElementById("progressPercent");
-
-      progressContainer.classList.remove("hidden");
-
-      let progress = 0;
-      const interval = setInterval(() => {
-        progress += Math.random() * 15;
-        if (progress >= 100) {
-          progress = 100;
-          clearInterval(interval);
-        }
-
-        progressBar.style.width = `${progress}%`;
-        progressPercent.textContent = `${Math.round(progress)}%`;
-      }, 200);
-    }
-
-    // Fungsi untuk menyembunyikan progress bar
-    function hideProgressBar() {
-      const progressContainer = document.getElementById(
-        "analyzeProgressContainer"
-      );
-      progressContainer.classList.add("hidden");
-    }
-
-    // Fungsi untuk menampilkan hasil analisis di tab Topik Utama
-    function displayTopicResults(results) {
-      const container = document.getElementById("modelResultsContainer");
-      container.innerHTML = "";
-
-      results.forEach((result) => {
-        const modelSection = document.createElement("div");
-        modelSection.className =
-          "bg-emerald-50 rounded-lg p-6 border border-emerald-200";
-
-        // Header model
-        const modelHeader = document.createElement("div");
-        modelHeader.className = "flex items-center justify-between mb-4";
-
-        const modelTitle = document.createElement("h3");
-        modelTitle.className = "text-xl font-bold text-emerald-800";
-        modelTitle.innerHTML = `<i class="fa-solid fa-brain mr-2"></i>Hasil Model ${result.model_type.toUpperCase()}`;
-
-        const topicCount = document.createElement("span");
-        topicCount.className =
-          "bg-emerald-100 text-emerald-800 px-3 py-1 rounded-full text-sm font-medium";
-        topicCount.textContent = `${result.topics.length} Topik Ditemukan`;
-
-        modelHeader.appendChild(modelTitle);
-        modelHeader.appendChild(topicCount);
-        modelSection.appendChild(modelHeader);
-
-        // Daftar topik
-        result.topics.forEach((topic) => {
-          const topicCard = document.createElement("div");
-          topicCard.className =
-            "bg-white rounded-lg p-4 mb-4 border border-emerald-100";
-
-          // Header topik
-          const topicHeader = document.createElement("div");
-          topicHeader.className = "flex justify-between items-start mb-3";
-
-          const topicName = document.createElement("h4");
-          topicName.className = "text-lg font-semibold text-emerald-800";
-          topicName.textContent = topic.name;
-
-          const topicPercentage = document.createElement("span");
-          topicPercentage.className =
-            "bg-emerald-500 text-white px-3 py-1 rounded-full text-sm font-bold";
-          topicPercentage.textContent = `${topic.percentage}%`;
-
-          topicHeader.appendChild(topicName);
-          topicHeader.appendChild(topicPercentage);
-          topicCard.appendChild(topicHeader);
-
-          // Kata kunci
-          const keywordsContainer = document.createElement("div");
-          keywordsContainer.className = "flex flex-wrap gap-2 mb-3";
-
-          topic.keywords.forEach((keyword) => {
-            const keywordSpan = document.createElement("span");
-            keywordSpan.className =
-              "bg-emerald-100 text-emerald-800 px-3 py-1 rounded-full text-sm border border-emerald-200";
-            keywordSpan.textContent = keyword;
-            keywordsContainer.appendChild(keywordSpan);
-          });
-
-          topicCard.appendChild(keywordsContainer);
-
-          // Sumber representatif
-          if (
-            topic.representative_sources &&
-            topic.representative_sources.length > 0
-          ) {
-            const sourcesTitle = document.createElement("p");
-            sourcesTitle.className = "text-sm font-medium text-slate-600 mb-2";
-            sourcesTitle.textContent = "Sumber Representatif:";
-            topicCard.appendChild(sourcesTitle);
-
-            const sourcesContainer = document.createElement("div");
-            sourcesContainer.className = "space-y-2";
-
-            topic.representative_sources.forEach((source) => {
-              const sourceDiv = document.createElement("div");
-              sourceDiv.className =
-                "text-sm text-slate-600 bg-slate-50 p-2 rounded";
-              sourceDiv.innerHTML = `<strong>${source.source}:</strong> ${source.content_preview}`;
-              if (source.verse) {
-                sourceDiv.innerHTML += ` <span class="text-emerald-600 font-medium">(${source.verse})</span>`;
-              }
-              sourcesContainer.appendChild(sourceDiv);
-            });
-
-            topicCard.appendChild(sourcesContainer);
-          }
-
-          modelSection.appendChild(topicCard);
+      // Tombol kembali dari hasil analisis ke preprocessing
+      document
+        .getElementById("btnBackToPreprocess")
+        .addEventListener("click", () => {
+          document.getElementById("tab-preprocess").click();
         });
 
-        container.appendChild(modelSection);
-      });
-    }
+      // Fungsi untuk simulasi progress bar
+      function simulateProgress() {
+        const progressBar = document.getElementById("analyzeProgressBar");
+        const progressPercent = document.getElementById("progressPercent");
+        const progressContainer = document.getElementById(
+          "analyzeProgressContainer"
+        );
 
-    // Fungsi untuk menampilkan sumber dokumen
-    function displaySources(sources) {
-      const container = document.getElementById("sourcesContainer");
-      container.innerHTML = "";
+        progressContainer.classList.remove("hidden");
 
-      if (sources.length === 0) {
-        container.innerHTML = `
+        let progress = 0;
+        const interval = setInterval(() => {
+          progress += Math.random() * 10;
+          if (progress >= 100) {
+            progress = 100;
+            clearInterval(interval);
+
+            // Setelah selesai, tampilkan hasil analisis
+            setTimeout(() => {
+              showAnalysisResults();
+            }, 500);
+          }
+
+          progressBar.style.width = `${progress}%`;
+          progressPercent.textContent = `${Math.round(progress)}%`;
+        }, 200);
+      }
+
+      // Fungsi untuk menampilkan hasil analisis
+      function showAnalysisResults() {
+        const progressContainer = document.getElementById(
+          "analyzeProgressContainer"
+        );
+        const resultsBody = document.getElementById("analysisResultsBody");
+        const resultsContent = document.getElementById(
+          "analysisResultsContent"
+        );
+
+        progressContainer.classList.add("hidden");
+
+        // Sembunyikan placeholder dan tampilkan hasil
+        resultsBody.innerHTML = "";
+        resultsContent.classList.remove("hidden");
+
+        // Scroll ke hasil analisis
+        resultsContent.scrollIntoView({ behavior: "smooth" });
+      }
+
+      // Update event listener untuk tombol analisis
+      document
+        .getElementById("btnAnalyze")
+        .addEventListener("click", async () => {
+          const models = Array.from(
+            document.querySelectorAll('input[name="model"]:checked')
+          ).map((el) => el.value);
+
+          if (models.length === 0) {
+            alert("Pilih setidaknya satu model analisis!");
+            return;
+          }
+
+          // Buka tab hasil analisis
+          document.getElementById("tab-analysis").click();
+
+          // Mulai progress bar
+          simulateProgress();
+        });
+
+      // Variabel global untuk menyimpan hasil analisis
+      let analysisResults = {};
+
+      // Fungsi untuk menampilkan progress bar
+      function showProgressBar() {
+        const progressContainer = document.getElementById(
+          "analyzeProgressContainer"
+        );
+        const progressBar = document.getElementById("analyzeProgressBar");
+        const progressPercent = document.getElementById("progressPercent");
+
+        progressContainer.classList.remove("hidden");
+
+        let progress = 0;
+        const interval = setInterval(() => {
+          progress += Math.random() * 15;
+          if (progress >= 100) {
+            progress = 100;
+            clearInterval(interval);
+          }
+
+          progressBar.style.width = `${progress}%`;
+          progressPercent.textContent = `${Math.round(progress)}%`;
+        }, 200);
+      }
+
+      // Fungsi untuk menyembunyikan progress bar
+      function hideProgressBar() {
+        const progressContainer = document.getElementById(
+          "analyzeProgressContainer"
+        );
+        progressContainer.classList.add("hidden");
+      }
+
+      // Fungsi untuk menampilkan hasil analisis di tab Topik Utama
+      function displayTopicResults(results) {
+        const container = document.getElementById("modelResultsContainer");
+        container.innerHTML = "";
+
+        results.forEach((result) => {
+          const modelSection = document.createElement("div");
+          modelSection.className =
+            "bg-emerald-50 rounded-lg p-6 border border-emerald-200";
+
+          // Header model
+          const modelHeader = document.createElement("div");
+          modelHeader.className = "flex items-center justify-between mb-4";
+
+          const modelTitle = document.createElement("h3");
+          modelTitle.className = "text-xl font-bold text-emerald-800";
+          modelTitle.innerHTML = `<i class="fa-solid fa-brain mr-2"></i>Hasil Model ${result.model_type.toUpperCase()}`;
+
+          const topicCount = document.createElement("span");
+          topicCount.className =
+            "bg-emerald-100 text-emerald-800 px-3 py-1 rounded-full text-sm font-medium";
+          topicCount.textContent = `${result.topics.length} Topik Ditemukan`;
+
+          modelHeader.appendChild(modelTitle);
+          modelHeader.appendChild(topicCount);
+          modelSection.appendChild(modelHeader);
+
+          // Daftar topik
+          result.topics.forEach((topic) => {
+            const topicCard = document.createElement("div");
+            topicCard.className =
+              "bg-white rounded-lg p-4 mb-4 border border-emerald-100";
+
+            // Header topik
+            const topicHeader = document.createElement("div");
+            topicHeader.className = "flex justify-between items-start mb-3";
+
+            const topicName = document.createElement("h4");
+            topicName.className = "text-lg font-semibold text-emerald-800";
+            topicName.textContent = topic.name;
+
+            const topicPercentage = document.createElement("span");
+            topicPercentage.className =
+              "bg-emerald-500 text-white px-3 py-1 rounded-full text-sm font-bold";
+            topicPercentage.textContent = `${topic.percentage}%`;
+
+            topicHeader.appendChild(topicName);
+            topicHeader.appendChild(topicPercentage);
+            topicCard.appendChild(topicHeader);
+
+            // Kata kunci
+            const keywordsContainer = document.createElement("div");
+            keywordsContainer.className = "flex flex-wrap gap-2 mb-3";
+
+            topic.keywords.forEach((keyword) => {
+              const keywordSpan = document.createElement("span");
+              keywordSpan.className =
+                "bg-emerald-100 text-emerald-800 px-3 py-1 rounded-full text-sm border border-emerald-200";
+              keywordSpan.textContent = keyword;
+              keywordsContainer.appendChild(keywordSpan);
+            });
+
+            topicCard.appendChild(keywordsContainer);
+
+            // Sumber representatif
+            if (
+              topic.representative_sources &&
+              topic.representative_sources.length > 0
+            ) {
+              const sourcesTitle = document.createElement("p");
+              sourcesTitle.className =
+                "text-sm font-medium text-slate-600 mb-2";
+              sourcesTitle.textContent = "Sumber Representatif:";
+              topicCard.appendChild(sourcesTitle);
+
+              const sourcesContainer = document.createElement("div");
+              sourcesContainer.className = "space-y-2";
+
+              topic.representative_sources.forEach((source) => {
+                const sourceDiv = document.createElement("div");
+                sourceDiv.className =
+                  "text-sm text-slate-600 bg-slate-50 p-2 rounded";
+                sourceDiv.innerHTML = `<strong>${source.source}:</strong> ${source.content_preview}`;
+                if (source.verse) {
+                  sourceDiv.innerHTML += ` <span class="text-emerald-600 font-medium">(${source.verse})</span>`;
+                }
+                sourcesContainer.appendChild(sourceDiv);
+              });
+
+              topicCard.appendChild(sourcesContainer);
+            }
+
+            modelSection.appendChild(topicCard);
+          });
+
+          container.appendChild(modelSection);
+        });
+      }
+
+      // Fungsi untuk menampilkan sumber dokumen
+      function displaySources(sources) {
+        const container = document.getElementById("sourcesContainer");
+        container.innerHTML = "";
+
+        if (sources.length === 0) {
+          container.innerHTML = `
       <div class="text-center text-slate-500 py-8">
         <i class="fa-solid fa-book-open text-3xl mb-3 text-slate-300"></i>
         <p>Tidak ada data sumber yang tersedia</p>
       </div>
     `;
-        return;
-      }
+          return;
+        }
 
-      sources.forEach((source) => {
-        const sourceCard = document.createElement("div");
-        sourceCard.className =
-          "bg-white rounded-lg p-4 border border-slate-200";
+        sources.forEach((source) => {
+          const sourceCard = document.createElement("div");
+          sourceCard.className =
+            "bg-white rounded-lg p-4 border border-slate-200";
 
-        sourceCard.innerHTML = `
+          sourceCard.innerHTML = `
       <div class="flex justify-between items-start mb-2">
         <h4 class="font-semibold text-emerald-800">${source.reference}</h4>
         <span class="bg-slate-100 text-slate-600 px-2 py-1 rounded text-xs">Dokumen ${source.doc_id}</span>
@@ -1162,20 +1679,20 @@
       <p class="text-sm text-slate-600">${source.preview}</p>
     `;
 
-        container.appendChild(sourceCard);
-      });
-    }
+          container.appendChild(sourceCard);
+        });
+      }
 
-    // Fungsi untuk menampilkan visualisasi
-    function displayVisualization(visualizationData) {
-      const container = document.getElementById("visualizationContainer");
+      // Fungsi untuk menampilkan visualisasi
+      function displayVisualization(visualizationData) {
+        const container = document.getElementById("visualizationContainer");
 
-      // Untuk sekarang kita buat visualisasi sederhana
-      // Dalam implementasi nyata, Anda bisa menggunakan Chart.js atau library lain
-      let visualizationHTML = "";
+        // Untuk sekarang kita buat visualisasi sederhana
+        // Dalam implementasi nyata, Anda bisa menggunakan Chart.js atau library lain
+        let visualizationHTML = "";
 
-      visualizationData.forEach((data) => {
-        visualizationHTML += `
+        visualizationData.forEach((data) => {
+          visualizationHTML += `
       <div class="bg-slate-50 rounded-lg p-4 border border-slate-200">
         <h4 class="font-medium text-slate-700 mb-3">Distribusi Topik - ${
           data.model_type
@@ -1197,61 +1714,61 @@
         </div>
       </div>
     `;
-      });
+        });
 
-      container.innerHTML = visualizationHTML;
-    }
+        container.innerHTML = visualizationHTML;
+      }
 
-    // Fungsi untuk menangani pencarian
-    function setupSearchFunctionality(searchData) {
-      const searchInput = document.getElementById("searchInput");
-      const searchResults = document.getElementById("searchResults");
+      // Fungsi untuk menangani pencarian
+      function setupSearchFunctionality(searchData) {
+        const searchInput = document.getElementById("searchInput");
+        const searchResults = document.getElementById("searchResults");
 
-      searchInput.addEventListener("input", function (e) {
-        const query = e.target.value.toLowerCase().trim();
+        searchInput.addEventListener("input", function (e) {
+          const query = e.target.value.toLowerCase().trim();
 
-        if (query.length < 2) {
-          searchResults.innerHTML = `
+          if (query.length < 2) {
+            searchResults.innerHTML = `
         <div class="text-center text-slate-500 py-8">
           <i class="fa-solid fa-search text-3xl mb-3 text-slate-300"></i>
           <p>Masukkan minimal 2 karakter untuk mencari</p>
         </div>
       `;
-          return;
-        }
+            return;
+          }
 
-        const filteredResults = searchData.filter(
-          (item) =>
-            item.keyword.toLowerCase().includes(query) ||
-            item.topic_name.toLowerCase().includes(query)
-        );
+          const filteredResults = searchData.filter(
+            (item) =>
+              item.keyword.toLowerCase().includes(query) ||
+              item.topic_name.toLowerCase().includes(query)
+          );
 
-        if (filteredResults.length === 0) {
-          searchResults.innerHTML = `
+          if (filteredResults.length === 0) {
+            searchResults.innerHTML = `
         <div class="text-center text-slate-500 py-8">
           <i class="fa-solid fa-search text-3xl mb-3 text-slate-300"></i>
           <p>Tidak ditemukan hasil untuk "${query}"</p>
         </div>
       `;
-          return;
-        }
-
-        // Kelompokkan hasil berdasarkan topik
-        const groupedResults = {};
-        filteredResults.forEach((item) => {
-          if (!groupedResults[item.topic_id]) {
-            groupedResults[item.topic_id] = {
-              topic_name: item.topic_name,
-              percentage: item.percentage,
-              keywords: [],
-            };
+            return;
           }
-          groupedResults[item.topic_id].keywords.push(item.keyword);
-        });
 
-        let resultsHTML = "";
-        Object.values(groupedResults).forEach((topic) => {
-          resultsHTML += `
+          // Kelompokkan hasil berdasarkan topik
+          const groupedResults = {};
+          filteredResults.forEach((item) => {
+            if (!groupedResults[item.topic_id]) {
+              groupedResults[item.topic_id] = {
+                topic_name: item.topic_name,
+                percentage: item.percentage,
+                keywords: [],
+              };
+            }
+            groupedResults[item.topic_id].keywords.push(item.keyword);
+          });
+
+          let resultsHTML = "";
+          Object.values(groupedResults).forEach((topic) => {
+            resultsHTML += `
         <div class="bg-white rounded-lg p-4 border border-emerald-200">
           <div class="flex justify-between items-start mb-3">
             <h4 class="font-semibold text-emerald-800">${topic.topic_name}</h4>
@@ -1270,169 +1787,270 @@
           </div>
         </div>
       `;
-        });
-
-        searchResults.innerHTML = resultsHTML;
-      });
-    }
-
-    // Event listener untuk tab hasil analisis
-    document.querySelectorAll(".analysis-tab-btn").forEach((button) => {
-      button.addEventListener("click", function () {
-        // Update active tab
-        document.querySelectorAll(".analysis-tab-btn").forEach((btn) => {
-          btn.classList.remove("border-emerald-500", "text-emerald-600");
-          btn.classList.add("border-transparent", "text-slate-500");
-        });
-        this.classList.add("border-emerald-500", "text-emerald-600");
-        this.classList.remove("border-transparent", "text-slate-500");
-
-        // Show corresponding tab content
-        const tabName = this.getAttribute("data-tab");
-        document
-          .querySelectorAll(".analysis-tab-content")
-          .forEach((content) => {
-            content.classList.add("hidden");
           });
-        document.getElementById(`tab-${tabName}`).classList.remove("hidden");
 
-        // Load data untuk tab yang dipilih
-        if (tabName === "sources" && analysisResults.sources) {
-          displaySources(analysisResults.sources);
-        } else if (
-          tabName === "visualization" &&
-          analysisResults.visualization_data
-        ) {
-          displayVisualization([analysisResults.visualization_data]);
-        } else if (tabName === "search" && analysisResults.search_data) {
-          setupSearchFunctionality(analysisResults.search_data);
-        }
+          searchResults.innerHTML = resultsHTML;
+        });
+      }
+
+      // Event listener untuk tab hasil analisis
+      document.querySelectorAll(".analysis-tab-btn").forEach((button) => {
+        button.addEventListener("click", function () {
+          // Update active tab
+          document.querySelectorAll(".analysis-tab-btn").forEach((btn) => {
+            btn.classList.remove("border-emerald-500", "text-emerald-600");
+            btn.classList.add("border-transparent", "text-slate-500");
+          });
+          this.classList.add("border-emerald-500", "text-emerald-600");
+          this.classList.remove("border-transparent", "text-slate-500");
+
+          // Show corresponding tab content
+          const tabName = this.getAttribute("data-tab");
+          document
+            .querySelectorAll(".analysis-tab-content")
+            .forEach((content) => {
+              content.classList.add("hidden");
+            });
+          document.getElementById(`tab-${tabName}`).classList.remove("hidden");
+
+          // Load data untuk tab yang dipilih
+          if (tabName === "sources" && analysisResults.sources) {
+            displaySources(analysisResults.sources);
+          } else if (
+            tabName === "visualization" &&
+            analysisResults.visualization_data
+          ) {
+            displayVisualization([analysisResults.visualization_data]);
+          } else if (tabName === "search" && analysisResults.search_data) {
+            setupSearchFunctionality(analysisResults.search_data);
+          }
+        });
+      });
+
+      // Update event listener untuk tombol analisis
+      document
+        .getElementById("btnAnalyze")
+        .addEventListener("click", async function () {
+          const models = Array.from(
+            document.querySelectorAll('input[name="model"]:checked')
+          ).map((el) => el.value);
+
+          if (models.length === 0) {
+            alert("Pilih setidaknya satu model analisis!");
+            return;
+          }
+
+          const fileName = document
+            .getElementById("fileName")
+            .textContent.trim();
+          if (!fileName) {
+            alert("Silakan unggah file terlebih dahulu!");
+            return;
+          }
+
+          // Buka tab hasil analisis
+          document.getElementById("tab-analysis").click();
+
+          // Reset dan tampilkan progress bar
+          showProgressBar();
+
+          // Update summary
+          document.getElementById(
+            "resultsSummary"
+          ).textContent = `Menganalisis dengan ${models.length} model...`;
+
+          // Kirim permintaan untuk setiap model
+          let allResults = [];
+          let allSearchData = [];
+          let allSources = [];
+          let allVisualizationData = [];
+
+          for (let i = 0; i < models.length; i++) {
+            const model = models[i];
+            const formData = new FormData();
+            formData.append("filename", fileName);
+            formData.append("model", model);
+
+            try {
+              const res = await fetch("/analyze_model", {
+                method: "POST",
+                body: formData,
+              });
+              const data = await res.json();
+
+              if (data.status === "success") {
+                allResults.push(data.results);
+                allSearchData = allSearchData.concat(
+                  data.results.search_data || []
+                );
+                allSources = data.results.sources || [];
+                allVisualizationData.push(data.results.visualization_data);
+              } else {
+                console.error(`Gagal untuk model ${model}:`, data.message);
+              }
+            } catch (error) {
+              console.error(`Error untuk model ${model}:`, error);
+            }
+          }
+
+          // Sembunyikan progress bar
+          hideProgressBar();
+
+          // Simpan hasil ke variabel global
+          analysisResults = {
+            topics: allResults,
+            sources: allSources,
+            visualization_data: allVisualizationData,
+            search_data: allSearchData,
+          };
+
+          // Update summary
+          const totalTopics = allResults.reduce(
+            (sum, result) => sum + (result.topics?.length || 0),
+            0
+          );
+          document.getElementById(
+            "resultsSummary"
+          ).textContent = `Ditemukan ${totalTopics} topik utama dari ${models.length} model analisis`;
+
+          // Tampilkan hasil di tab Topik Utama
+          displayTopicResults(allResults);
+
+          // Set tab pertama sebagai aktif
+          document
+            .querySelector('.analysis-tab-btn[data-tab="topics"]')
+            .click();
+        });
+
+      // Tombol kembali dari hasil analisis ke preprocessing
+      document
+        .getElementById("btnBackToPreprocess")
+        .addEventListener("click", function () {
+          document.getElementById("tab-preprocess").click();
+        });
+
+      document.getElementById("btnBack").addEventListener("click", function () {
+        document.getElementById("tab-upload").click();
       });
     });
 
-    // Update event listener untuk tombol analisis
+    // Toggle animasi fade-in/out
+    const toggle = document.getElementById("toggleTemplateInfo");
+    const info = document.getElementById("templateInfo");
+
+    toggle.addEventListener("click", () => {
+      if (info.classList.contains("hidden")) {
+        info.classList.remove("hidden");
+        setTimeout(() => (info.style.opacity = "1"), 10);
+      } else {
+        info.style.opacity = "0";
+        setTimeout(() => info.classList.add("hidden"), 500);
+      }
+    });
+
+    // Download file CSV dari root folder
     document
-      .getElementById("btnAnalyze")
-      .addEventListener("click", async function () {
-        const models = Array.from(
-          document.querySelectorAll('input[name="model"]:checked')
-        ).map((el) => el.value);
-
-        if (models.length === 0) {
-          alert("Pilih setidaknya satu model analisis!");
-          return;
-        }
-
-        const fileName = document.getElementById("fileName").textContent.trim();
-        if (!fileName) {
-          alert("Silakan unggah file terlebih dahulu!");
-          return;
-        }
-
-        // Buka tab hasil analisis
-        document.getElementById("tab-analysis").click();
-
-        // Reset dan tampilkan progress bar
-        showProgressBar();
-
-        // Update summary
-        document.getElementById(
-          "resultsSummary"
-        ).textContent = `Menganalisis dengan ${models.length} model...`;
-
-        // Kirim permintaan untuk setiap model
-        let allResults = [];
-        let allSearchData = [];
-        let allSources = [];
-        let allVisualizationData = [];
-
-        for (let i = 0; i < models.length; i++) {
-          const model = models[i];
-          const formData = new FormData();
-          formData.append("filename", fileName);
-          formData.append("model", model);
-
-          try {
-            const res = await fetch("/analyze_model", {
-              method: "POST",
-              body: formData,
-            });
-            const data = await res.json();
-
-            if (data.status === "success") {
-              allResults.push(data.results);
-              allSearchData = allSearchData.concat(
-                data.results.search_data || []
-              );
-              allSources = data.results.sources || [];
-              allVisualizationData.push(data.results.visualization_data);
-            } else {
-              console.error(`Gagal untuk model ${model}:`, data.message);
-            }
-          } catch (error) {
-            console.error(`Error untuk model ${model}:`, error);
-          }
-        }
-
-        // Sembunyikan progress bar
-        hideProgressBar();
-
-        // Simpan hasil ke variabel global
-        analysisResults = {
-          topics: allResults,
-          sources: allSources,
-          visualization_data: allVisualizationData,
-          search_data: allSearchData,
-        };
-
-        // Update summary
-        const totalTopics = allResults.reduce(
-          (sum, result) => sum + (result.topics?.length || 0),
-          0
-        );
-        document.getElementById(
-          "resultsSummary"
-        ).textContent = `Ditemukan ${totalTopics} topik utama dari ${models.length} model analisis`;
-
-        // Tampilkan hasil di tab Topik Utama
-        displayTopicResults(allResults);
-
-        // Set tab pertama sebagai aktif
-        document.querySelector('.analysis-tab-btn[data-tab="topics"]').click();
+      .getElementById("downloadTemplate")
+      .addEventListener("click", (e) => {
+        e.preventDefault(); // cegah buka tab baru
+        fetch("/static/template_file.csv")
+          .then((response) => {
+            if (!response.ok) throw new Error("File tidak ditemukan!");
+            return response.blob();
+          })
+          .then((blob) => {
+            const link = document.createElement("a");
+            const url = window.URL.createObjectURL(blob);
+            link.href = url;
+            link.download = "template_file.csv";
+            document.body.appendChild(link);
+            link.click();
+            document.body.removeChild(link);
+            window.URL.revokeObjectURL(url);
+          })
+          .catch((err) => {
+            console.error(err);
+            alert("File template tidak ditemukan di folder static!");
+          });
       });
+  </script> -->
 
-    // Tombol kembali dari hasil analisis ke preprocessing
-    document
-      .getElementById("btnBackToPreprocess")
-      .addEventListener("click", function () {
-        document.getElementById("tab-preprocess").click();
-      });
-  });
-</script>
-
-<style>
-  @keyframes fadeIn {
-    from {
-      opacity: 0;
-      transform: translateY(-10px);
+  <style>
+    @keyframes fadeIn {
+      from {
+        opacity: 0;
+        transform: translateY(-10px);
+      }
+      to {
+        opacity: 1;
+        transform: translateY(0);
+      }
     }
-    to {
-      opacity: 1;
-      transform: translateY(0);
+    .animate-fade-in {
+      animation: fadeIn 0.4s ease-in-out;
     }
-  }
-  .animate-fade-in {
-    animation: fadeIn 0.4s ease-in-out;
-  }
 
-  .analysis-tab-content {
-    animation: fadeIn 0.3s ease-in-out;
-  }
+    .analysis-tab-content {
+      animation: fadeIn 0.3s ease-in-out;
+    }
 
-  /* Smooth transitions for progress bar */
-  .transition-all {
-    transition: all 0.3s ease;
-  }
-</style>
+    /* Smooth transitions for progress bar */
+    .transition-all {
+      transition: all 0.3s ease;
+    }
 
-{% endblock %}
+    .modal-backdrop {
+      background-color: rgba(0, 0, 0, 0.5);
+    }
+
+    .modal-content {
+      animation: modalFadeIn 0.3s ease-out;
+    }
+
+    @keyframes modalFadeIn {
+      from {
+        opacity: 0;
+        transform: translateY(-20px);
+      }
+      to {
+        opacity: 1;
+        transform: translateY(0);
+      }
+    }
+
+    /* Tambahkan di bagian style */
+.rotate-180 {
+  transform: rotate(180deg);
+}
+
+.section-toggle {
+  transition: all 0.3s ease;
+}
+
+.section-content {
+  transition: all 0.3s ease;
+}
+
+.animate-fade-in {
+  animation: fadeIn 0.4s ease-in-out;
+}
+
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+    transform: translateY(-10px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.preprocessed-file-checkbox:checked {
+  background-color: #10b981;
+  border-color: #10b981;
+}
+  </style>
+
+  {% endblock %}
+</div>

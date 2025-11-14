@@ -70,6 +70,145 @@ def analyze_universal():
 def uploaded_file(filename):
     return send_from_directory(app.config['UPLOAD_FOLDER'], filename)
 
+@app.route("/get_stopwords")
+def get_stopwords():
+    """Mengambil daftar stopwords dari file"""
+    try:
+        with open("stopwords_id.txt", "r", encoding="utf-8") as f:
+            content = f.read()
+        return {"status": "success", "content": content}
+    except FileNotFoundError:
+        # Jika file tidak ada, buat default
+        default_stopwords = """yang
+ke
+dari
+di
+dan
+ini
+itu
+dengan
+untuk
+tidak
+akan
+ada
+adalah
+atau
+dalam
+bisa
+saya
+kamu
+kita
+dia
+mereka
+bukan
+tapi
+juga
+sudah
+saja
+boleh
+harus
+perlu
+banyak
+sedikit
+sekali
+sangat
+terlalu
+amat"""
+        with open("stopwords_id.txt", "w", encoding="utf-8") as f:
+            f.write(default_stopwords)
+        return {"status": "success", "content": default_stopwords}
+
+@app.route("/save_stopwords", methods=["POST"])
+def save_stopwords():
+    """Menyimpan stopwords ke file"""
+    data = request.get_json()
+    content = data.get("content", "")
+    
+    try:
+        with open("stopwords_id.txt", "w", encoding="utf-8") as f:
+            f.write(content)
+        return {"status": "success", "message": "Stopwords berhasil disimpan"}
+    except Exception as e:
+        return {"status": "error", "message": f"Gagal menyimpan stopwords: {str(e)}"}, 500
+
+@app.route("/reset_stopwords", methods=["POST"])
+def reset_stopwords():
+    """Reset stopwords ke default"""
+    default_stopwords = """yang
+ke
+dari
+di
+dan
+ini
+itu
+dengan
+untuk
+tidak
+akan
+ada
+adalah
+atau
+dalam
+bisa
+saya
+kamu
+kita
+dia
+mereka
+bukan
+tapi
+juga
+sudah
+saja
+boleh
+harus
+perlu
+banyak
+sedikit
+sekali
+sangat
+terlalu
+amat"""
+    
+    try:
+        with open("stopwords_id.txt", "w", encoding="utf-8") as f:
+            f.write(default_stopwords)
+        return {"status": "success", "message": "Stopwords berhasil direset", "content": default_stopwords}
+    except Exception as e:
+        return {"status": "error", "message": f"Gagal reset stopwords: {str(e)}"}, 500
+
+# @app.route("/list_preprocessed_files")
+# def list_preprocessed_files():
+#     """Mendapatkan daftar file hasil preprocessing"""
+#     import glob
+#     files = glob.glob(os.path.join(app.config['UPLOAD_FOLDER'], 'preprocessed_*'))
+#     # Hanya ambil nama file
+#     file_names = [os.path.basename(f) for f in files]
+#     return {"status": "success", "files": file_names}
+
+# @app.route("/read_preprocessed_file")
+# def read_preprocessed_file():
+#     """Membaca isi file preprocessing untuk ditampilkan"""
+#     filename = request.args.get("filename")
+#     if not filename:
+#         return {"status": "error", "message": "Filename tidak diberikan"}, 400
+    
+#     file_path = os.path.join(app.config["UPLOAD_FOLDER"], filename)
+#     if not os.path.exists(file_path):
+#         return {"status": "error", "message": "File tidak ditemukan"}, 404
+    
+#     try:
+#         df = pd.read_csv(file_path)
+#         # Ambil kolom processed_text atau kolom pertama
+#         if "processed_text" in df.columns:
+#             content = df["processed_text"].head(10).to_string(index=False)  # Ambil 10 baris pertama
+#         else:
+#             content = df.iloc[:, 0].head(10).to_string(index=False)
+        
+#         return {"status": "success", "content": content}
+#     except Exception as e:
+#         return {"status": "error", "message": f"Gagal membaca file: {str(e)}"}, 500
+
 @app.route("/preprocess", methods=["POST"])
 def preprocess():
     file_path = os.path.join(app.config["UPLOAD_FOLDER"], request.form.get("filename"))
@@ -91,16 +230,39 @@ def preprocess():
     if config.get("remove_numbers") == "true":
         data = data.apply(lambda x: re.sub(r"\d+", "", x))
     if config.get("stopword") == "true":
-        try:
-            # Gunakan file stopwords jika ada
-            with open("stopwords_id.txt", encoding="utf-8") as f:
-                stopwords = set(f.read().split())
-            print("[INFO] Menggunakan stopwords dari stopwords_id.txt")
-        except FileNotFoundError:
-            # fallback otomatis ke Sastrawi
-            factory = StopWordRemoverFactory()
-            stopwords = set(factory.get_stop_words())
-            print("[INFO] File stopwords_id.txt tidak ditemukan → menggunakan Sastrawi bawaan")
+         if config.get("stopword") == "true":
+            stopwords_set = set()
+            
+            # Stopwords dari file
+            if config.get("stopword_file") == "true":
+                try:
+                    with open("stopwords_id.txt", encoding="utf-8") as f:
+                        file_stopwords = set(f.read().split())
+                    stopwords_set.update(file_stopwords)
+                    print("[INFO] Menggunakan stopwords dari file stopwords_id.txt")
+                except FileNotFoundError:
+                    print("[INFO] File stopwords_id.txt tidak ditemukan")
+            
+            # Stopwords dari Sastrawi
+            if config.get("stopword_sastrawi") == "true":
+                factory = StopWordRemoverFactory()
+                sastrawi_stopwords = set(factory.get_stop_words())
+                stopwords_set.update(sastrawi_stopwords)
+                print("[INFO] Menggunakan stopwords dari Sastrawi")
+            
+            # Hapus stopwords
+            if stopwords_set:
+                data = data.apply(lambda x: " ".join([word for word in x.split() if word not in stopwords_set]))
+        # try:
+        #     # Gunakan file stopwords jika ada
+        #     with open("stopwords_id.txt", encoding="utf-8") as f:
+        #         stopwords = set(f.read().split())
+        #     print("[INFO] Menggunakan stopwords dari stopwords_id.txt")
+        # except FileNotFoundError:
+        #     # fallback otomatis ke Sastrawi
+        #     factory = StopWordRemoverFactory()
+        #     stopwords = set(factory.get_stop_words())
+        #     print("[INFO] File stopwords_id.txt tidak ditemukan → menggunakan Sastrawi bawaan")
     if config.get("tokenization") == "true":
         data = data.apply(lambda x: x.split())
     if config.get("stemming") == "true":
@@ -118,6 +280,49 @@ def preprocess():
 
     return {"status": "success", "file": os.path.basename(out_path)}
 
+@app.route("/list_preprocessed_files")
+def list_preprocessed_files():
+    """Mendapatkan daftar file hasil preprocessing"""
+    import glob
+    try:
+        # Cari semua file yang diawali dengan 'preprocessed_'
+        files = glob.glob(os.path.join(app.config['UPLOAD_FOLDER'], 'preprocessed_*'))
+        # Urutkan berdasarkan waktu modifikasi (terbaru pertama)
+        files.sort(key=os.path.getmtime, reverse=True)
+        # Hanya ambil nama file
+        file_names = [os.path.basename(f) for f in files]
+        return {"status": "success", "files": file_names}
+    except Exception as e:
+        return {"status": "error", "message": f"Gagal mengambil daftar file: {str(e)}"}, 500
+
+@app.route("/read_preprocessed_file")
+def read_preprocessed_file():
+    """Membaca isi file preprocessing untuk ditampilkan"""
+    filename = request.args.get("filename")
+    if not filename:
+        return {"status": "error", "message": "Filename tidak diberikan"}, 400
+    
+    file_path = os.path.join(app.config["UPLOAD_FOLDER"], filename)
+    if not os.path.exists(file_path):
+        return {"status": "error", "message": "File tidak ditemukan"}, 404
+    
+    try:
+        df = pd.read_csv(file_path)
+        # Ambil kolom processed_text atau kolom teks pertama
+        if "processed_text" in df.columns:
+            content = df["processed_text"].head(20).to_string(index=False)  # Ambil 20 baris pertama
+        else:
+            # Cari kolom yang berisi teks
+            text_columns = [col for col in df.columns if col.lower() in ['text', 'content', 'teks']]
+            if text_columns:
+                content = df[text_columns[0]].head(20).to_string(index=False)
+            else:
+                content = df.iloc[:, 0].head(20).to_string(index=False)
+        
+        return {"status": "success", "content": content, "filename": filename}
+    except Exception as e:
+        return {"status": "error", "message": f"Gagal membaca file: {str(e)}"}, 500
+    
 @app.route("/analyze_model", methods=["POST"])
 def analyze_model():
     from flask import request, jsonify
